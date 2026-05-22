@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
@@ -244,66 +244,112 @@ body::before {
 #playerScreen {
   justify-content: flex-start;
   padding: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  background: var(--ink);
+  overflow: hidden;
+  background: #000;
+  /* screen is already position:fixed inset:0 — player fills it fully */
 }
 
-/* ── fixed top nav bar ── */
-.player-navbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 60;
-  height: calc(52px + var(--safe-top));
+/* ── Player stage: full flex column inside the screen ── */
+/* NOT position:fixed — screen already handles that */
+.player-stage {
+  width: 100%; height: 100%;
+  background: #000;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── TOP BAR: in-flow, always first child, stays on top of video ── */
+.nfx-topbar {
+  flex: 0 0 auto;
+  display: flex; align-items: center;
+  width: 100%;
+  height: calc(46px + var(--safe-top));
   padding-top: var(--safe-top);
   padding-left: calc(4px + var(--safe-left));
-  padding-right: calc(12px + var(--safe-right));
-  display: flex; align-items: center; gap: 4px;
-  background: linear-gradient(to bottom, rgba(26,10,10,0.96) 60%, transparent);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  padding-right: calc(8px + var(--safe-right));
+  gap: 2px;
+  background: linear-gradient(to bottom, rgba(14,5,5,0.98) 60%, rgba(14,5,5,0.0));
+  position: relative; z-index: 30;
+  /* Visually overlap the video below by pulling it up */
+  margin-bottom: -46px;
+  pointer-events: none;
 }
-.player-navbar .ep-label {
-  flex: 1; font-size: 12px; letter-spacing: 0.14em; color: var(--dust);
-  text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  padding: 0 4px;
-}
+.nfx-topbar > * { pointer-events: auto; }
 
-/* ── video container fills width, 16/9 ── */
-.player-body {
-  width: 100%;
-  padding-top: calc(52px + var(--safe-top));
-  display: flex; flex-direction: column;
-  min-height: 100%;
-}
-
-.video-shell {
-  position: relative; width: 100%;
-  /* Shell = pure 16:9 video area + 52px for Drive's bottom control bar     */
-  padding-bottom: calc(56.25% + 52px);
-  background: #0d0505; overflow: hidden;
+.nfx-back-btn, .nfx-fs-btn {
+  background: none; border: none;
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(245,230,230,0.9); cursor: pointer;
+  -webkit-appearance: none; touch-action: manipulation;
+  transition: background 0.15s, color 0.15s;
   flex-shrink: 0;
 }
-.drive-frame {
-  position: absolute;
-  /* Offset top by 40px to hide Drive's own title/header bar (we have ours) */
-  top: -40px;
-  left: 0;
-  width: 100%;
-  /* Total iframe height: shell + 40px we trimmed from top                  */
-  height: calc(100% + 40px);
-  border: none; background: #0d0505;
+.nfx-back-btn:active, .nfx-fs-btn:active {
+  background: rgba(201,121,122,0.2); color: var(--petal);
+}
+.nfx-back-btn svg, .nfx-fs-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+.nfx-ep-label {
+  flex: 1; text-align: center;
+  font-size: 11px; letter-spacing: 0.13em; color: rgba(232,196,196,0.72);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 0 2px;
+  font-family: 'Jost', sans-serif; font-weight: 300;
 }
 
-/* loading overlay inside video */
+/* ── VIDEO SHELL: takes all remaining space ── */
+.video-shell {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+/* iframe: overshoot on all sides to hide Drive's title bar (~52px top)
+   and Drive's bottom chrome (~120px on mobile).
+   overflow:hidden on .video-shell clips it cleanly. */
+.drive-frame {
+  position: absolute;
+  top: -52px; left: 0;
+  width: 100%;
+  height: calc(100% + 172px);
+  border: none;
+  background: #000;
+}
+
+/* Blocks touches on Drive's bottom chrome (settings, CC, speed, fullscreen).
+   Tapping those Drive controls causes a page-level focus shift → pause.
+   Since we have our own controls below, we block that region entirely. */
+.drive-touch-blocker {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 110px;
+  z-index: 4;
+  background: transparent;
+}
+/* Also block Drive's top title bar */
+.drive-touch-blocker-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 60px;
+  z-index: 4;
+  background: transparent;
+}
+
+/* loading overlay */
 .vid-loader {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(13,5,5,0.7);
+  background: rgba(10,3,3,0.78);
   opacity: 0; pointer-events: none;
-  transition: opacity 0.3s;
-  z-index: 5;
+  transition: opacity 0.3s; z-index: 5;
 }
-.vid-loader.show { opacity: 1; }
+.vid-loader.show { opacity: 1; pointer-events: auto; }
 .spin-ring {
-  width: 42px; height: 42px; border-radius: 50%;
+  width: 36px; height: 36px; border-radius: 50%;
   border: 2px solid rgba(201,121,122,0.18);
   border-top-color: var(--rose); animation: spin 0.75s linear infinite;
 }
@@ -311,137 +357,177 @@ body::before {
 
 /* fade transition */
 .vid-fade {
-  position: absolute; inset: 0; background: var(--ink);
+  position: absolute; inset: 0; background: #000;
   opacity: 0; pointer-events: none; z-index: 8;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
 }
 .vid-fade.active { opacity: 1; }
 
-/* episode badge on video */
+/* episode badge top-left of video */
 .ep-badge {
-  position: absolute; top: 10px; left: 10px; z-index: 6;
-  background: rgba(20,8,8,0.8); border: 1px solid rgba(201,121,122,0.2);
-  border-radius: 20px; padding: 4px 12px;
+  position: absolute; top: 52px; left: 10px; z-index: 9;
+  background: rgba(8,2,2,0.9); border: 1px solid rgba(201,121,122,0.22);
+  border-radius: 20px; padding: 4px 11px;
   font-size: 10px; letter-spacing: 0.14em; color: var(--dust);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  pointer-events: none; opacity: 0; transition: opacity 0.4s;
+  pointer-events: none; opacity: 0; transition: opacity 0.35s;
 }
 .ep-badge.show { opacity: 1; }
 
-/* ── below-video controls bar ── */
-.player-controls {
+/* ════════════════════════════════════════
+   BOTTOM PANEL — prev / info / next
+════════════════════════════════════════ */
+.netflix-panel {
+  flex: 0 0 auto;
   width: 100%;
-  background: var(--ink);
-  border-top: 1px solid rgba(201,121,122,0.08);
-  padding: 10px 16px 12px;
-  padding-bottom: calc(12px + var(--safe-bottom));
-  flex-shrink: 0;
+  background: linear-gradient(to bottom, #0d0404, #080202);
+  border-top: 1px solid rgba(201,121,122,0.12);
+  display: flex; flex-direction: column;
+  padding-bottom: max(var(--safe-bottom), 8px);
+  z-index: 20;
 }
 
-/* now playing row */
-.now-playing-row {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 14px;
+/* ── Single controls row: prev | info | next ── */
+.nfx-controls {
+  display: flex; align-items: center;
+  padding: 8px 12px 6px;
+  gap: 8px;
 }
-.now-playing-show {
-  font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
-  font-size: 17px; letter-spacing: 0.06em; color: var(--petal);
+
+/* Prev / Next nav buttons */
+.nfx-nav-btn {
+  background: rgba(201,121,122,0.07);
+  border: 1px solid rgba(201,121,122,0.18);
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: rgba(245,230,230,0.82); cursor: pointer;
+  -webkit-appearance: none; touch-action: manipulation;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+  gap: 2px; flex-shrink: 0;
+}
+.nfx-nav-btn:active {
+  background: rgba(201,121,122,0.22); border-color: rgba(201,121,122,0.5);
+  transform: scale(0.92); color: var(--petal);
+}
+.nfx-nav-btn svg { width: 20px; height: 20px; fill: currentColor; display: block; }
+.nfx-nav-btn .lbl {
+  font-size: 7px; letter-spacing: 0.06em; color: rgba(212,165,165,0.4);
+  line-height: 1; font-family: 'Jost', sans-serif; font-weight: 300;
+}
+.nfx-nav-btn:disabled { opacity: 0.2; pointer-events: none; }
+
+/* Centre info block */
+.nfx-ep-info {
   flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; overflow: hidden;
 }
-.now-playing-ep {
-  font-size: 11px; letter-spacing: 0.14em; color: var(--rose);
+.nfx-show-name {
+  font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
+  font-size: 15px; letter-spacing: 0.06em; color: var(--petal);
+  white-space: nowrap;
+}
+.nfx-ep-chip {
+  font-size: 9px; letter-spacing: 0.16em; color: var(--rose);
   background: rgba(201,121,122,0.1); border: 1px solid rgba(201,121,122,0.22);
-  border-radius: 20px; padding: 4px 12px; white-space: nowrap;
-  font-family: 'Jost', sans-serif;
+  border-radius: 20px; padding: 2px 10px; white-space: nowrap;
+  font-family: 'Jost', sans-serif; font-weight: 300;
 }
 
-/* nav row — prev / next episode */
-.ep-nav-row {
-  display: flex; align-items: center; gap: 10px;
+/* ── Episode strip ── */
+.nfx-strip-row {
+  padding: 0px 14px 2px;
+  border-top: 1px solid rgba(201,121,122,0.07);
 }
-.nav-btn {
-  display: flex; align-items: center; gap: 6px;
-  background: rgba(201,121,122,0.08); border: 1px solid rgba(201,121,122,0.18);
-  border-radius: 10px; padding: 10px 16px;
-  color: var(--blush); font-family: 'Jost', sans-serif;
-  font-size: 12px; font-weight: 300; letter-spacing: 0.1em;
-  cursor: pointer; -webkit-appearance: none; touch-action: manipulation;
-  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
-  flex: 1; justify-content: center;
-}
-.nav-btn:hover  { background: rgba(201,121,122,0.14); border-color: rgba(201,121,122,0.35); color: var(--petal); }
-.nav-btn:active { background: rgba(201,121,122,0.22); transform: scale(0.97); }
-.nav-btn:disabled { opacity: 0.28; pointer-events: none; }
-.nav-btn svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
-.nav-btn.fs-btn { flex: 0 0 44px; padding: 10px; }
-
-/* ── episode strip ── */
-.ep-strip-section {
-  width: 100%;
-  padding: 16px 16px calc(16px + var(--safe-bottom));
-}
-.strip-label {
-  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-  color: rgba(212,165,165,0.45); margin-bottom: 10px; padding-left: 2px;
-}
-.ep-strip {
-  display: flex; gap: 8px; overflow-x: auto;
-  padding-bottom: 4px;
+.nfx-strip {
+  display: flex; gap: 5px; overflow-x: auto;
+  padding: 6px 0 4px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
-.ep-strip::-webkit-scrollbar { display: none; }
+.nfx-strip::-webkit-scrollbar { display: none; }
 .ep-pill {
   flex-shrink: 0;
-  background: rgba(40,18,18,0.7); border: 1px solid rgba(201,121,122,0.14);
-  border-radius: 24px; padding: 9px 16px;
-  font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 300;
+  background: rgba(24,10,10,0.9); border: 1px solid rgba(201,121,122,0.13);
+  border-radius: 16px; padding: 4px 11px;
+  font-family: 'Jost', sans-serif; font-size: 9px; font-weight: 300;
   letter-spacing: 0.1em; color: var(--dust); cursor: pointer;
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   white-space: nowrap; touch-action: manipulation; -webkit-appearance: none;
-  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
 }
-.ep-pill:active  { transform: scale(0.96); }
-.ep-pill.active  { background: rgba(201,121,122,0.18); border-color: rgba(201,121,122,0.48); color: var(--petal); }
+.ep-pill:active  { transform: scale(0.94); }
+.ep-pill.active  {
+  background: rgba(201,121,122,0.18); border-color: rgba(201,121,122,0.5);
+  color: var(--petal);
+}
 
 /* ── Toast ── */
 .toast {
-  position: fixed; top: calc(16px + var(--safe-top)); left: 50%; transform: translateX(-50%);
-  background: rgba(30,12,12,0.94); border: 1px solid rgba(201,121,122,0.22);
-  border-radius: 20px; padding: 8px 20px;
-  font-size: 12px; letter-spacing: 0.08em; color: var(--petal);
-  pointer-events: none; opacity: 0; z-index: 300;
-  transition: opacity 0.3s;
+  position: fixed; bottom: 180px; left: 50%; transform: translateX(-50%);
+  background: rgba(12,4,4,0.95); border: 1px solid rgba(201,121,122,0.22);
+  border-radius: 20px; padding: 7px 18px;
+  font-size: 11px; letter-spacing: 0.08em; color: var(--petal);
+  pointer-events: none; opacity: 0; z-index: 400;
+  transition: opacity 0.28s;
   backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   white-space: nowrap;
 }
 .toast.show { opacity: 1; }
 
 /* ── Animations ── */
-@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-
-/* ── Fullscreen ── */
-#playerWrap:fullscreen,
-#playerWrap:-webkit-full-screen {
-  background: #000;
-  display: flex; align-items: center; justify-content: center;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Media queries ── */
-@media (max-width: 380px) {
+/* ── Fullscreen: hide our panel, let Drive fill everything ── */
+.player-stage:fullscreen       { background: #000; }
+.player-stage:-webkit-full-screen { background: #000; }
+.player-stage:fullscreen .nfx-topbar,
+.player-stage:-webkit-full-screen .nfx-topbar { display: none; }
+.player-stage:fullscreen .netflix-panel,
+.player-stage:-webkit-full-screen .netflix-panel { display: none; }
+.player-stage:fullscreen .drive-frame,
+.player-stage:-webkit-full-screen .drive-frame { top: 0; height: 100%; }
+
+/* ── Fake fullscreen (iOS / fallback) ── */
+/* Covers entire viewport, hides the panel, video fills everything */
+#playerScreen.fake-fs {
+  z-index: 9999;
+  background: #000;
+}
+#playerScreen.fake-fs .netflix-panel {
+  display: none;
+}
+#playerScreen.fake-fs .nfx-topbar {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 60%, transparent);
+}
+#playerScreen.fake-fs .drive-frame {
+  top: -52px;
+  height: calc(100% + 172px);
+}
+/* In landscape the video-shell can grow to fill without the panel */
+#playerScreen.fake-fs .video-shell {
+  flex: 1 1 100%;
+}
+
+/* ── Responsive tweaks ── */
+@media (max-width: 390px) {
   .intro-title { font-size: 46px; }
-  .nav-btn { padding: 10px 12px; font-size: 11px; }
+  .nfx-nav-btn { width: 44px; height: 44px; }
+  .nfx-nav-btn svg { width: 17px; height: 17px; }
+  .nfx-controls { padding: 6px 10px 4px; }
 }
 @media (min-width: 600px) {
-  .player-body { max-width: 600px; margin: 0 auto; }
-  .player-navbar { max-width: 600px; left: 50%; transform: translateX(-50%); right: auto; width: 100%; }
-  .player-controls { max-width: 600px; margin: 0 auto; }
-  .ep-strip-section { max-width: 600px; margin: 0 auto; }
+  .player-stage { max-width: 600px; margin: 0 auto; }
+  #playerScreen { align-items: center; }
 }
 @media (max-height: 500px) and (orientation: landscape) {
-  .intro-title { font-size: 38px; margin: 6px 0 4px; }
+  .intro-title  { font-size: 38px; margin: 6px 0 4px; }
   .intro-heart  { margin-bottom: 16px; }
   .intro-message { margin-bottom: 16px; }
+  .nfx-strip-row { display: none; }
+  .nfx-controls  { padding: 4px 10px; }
 }
 </style>
 </head>
@@ -507,62 +593,67 @@ body::before {
 ══════════════════════════════════════ -->
 <div class="screen hidden" id="playerScreen">
 
-  <!-- fixed top navbar -->
-  <div class="player-navbar">
-    <button class="icon-btn" onclick="goToFolder()" aria-label="back">
-      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-    </button>
-    <span class="ep-label" id="navEpLabel">offcampus</span>
-    <button class="icon-btn" onclick="toggleFullscreen()" aria-label="fullscreen">
-      <svg id="fsIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-    </button>
-  </div>
+  <div class="player-stage" id="playerStage">
 
-  <!-- scrollable player body -->
-  <div id="playerWrap" style="width:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; flex:1; overscroll-behavior:none;">
-    <div class="player-body">
-
-      <!-- video -->
-      <div class="video-shell" id="videoShell">
-        <iframe id="driveFrame" class="drive-frame" src=""
-                allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>
-        <div class="vid-loader" id="vidLoader"><div class="spin-ring"></div></div>
-        <div class="vid-fade" id="vidFade"></div>
-        <div class="ep-badge" id="epBadge"></div>
-      </div>
-
-      <!-- controls below video -->
-      <div class="player-controls">
-
-        <!-- now playing -->
-        <div class="now-playing-row">
-          <span class="now-playing-show">offcampus</span>
-          <span class="now-playing-ep" id="nowEpChip">ep 01</span>
-        </div>
-
-        <!-- prev / next -->
-        <div class="ep-nav-row">
-          <button class="nav-btn" id="prevBtn" onclick="changeEpisode(currentEp-1)" disabled>
-            <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
-            prev episode
-          </button>
-          <button class="nav-btn" id="nextBtn" onclick="changeEpisode(currentEp+1)">
-            next episode
-            <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2.5-6 5.5-4v8l-5.5-4zM16 6h2v12h-2z"/></svg>
-          </button>
-        </div>
-
-      </div>
-
-      <!-- episode pill strip -->
-      <div class="ep-strip-section">
-        <p class="strip-label">all episodes</p>
-        <div class="ep-strip" id="epStrip"></div>
-      </div>
-
+    <!-- TOP BAR — overlays video with gradient fade -->
+    <div class="nfx-topbar">
+      <button class="nfx-back-btn" onclick="goToFolder()" aria-label="back">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      </button>
+      <span class="nfx-ep-label" id="navEpLabel">offcampus</span>
+      <button class="nfx-fs-btn" onclick="toggleFullscreen()" aria-label="fullscreen">
+        <svg id="fsIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
     </div>
-  </div>
 
+    <!-- VIDEO AREA -->
+    <div class="video-shell" id="videoShell">
+      <iframe id="driveFrame" class="drive-frame" src=""
+              allow="autoplay; fullscreen; picture-in-picture; screen-wake-lock"
+              allowfullscreen loading="lazy"></iframe>
+      <!-- Blocks Drive's bottom chrome (settings/CC/speed/fullscreen) from receiving touches.
+           Those taps cause a page focus shift which Drive interprets as blur → pause. -->
+      <div class="drive-touch-blocker"></div>
+      <!-- Blocks Drive's top title bar -->
+      <div class="drive-touch-blocker-top"></div>
+      <div class="vid-loader" id="vidLoader"><div class="spin-ring"></div></div>
+      <div class="vid-fade" id="vidFade"></div>
+      <div class="ep-badge" id="epBadge"></div>
+    </div>
+
+    <!-- BOTTOM PANEL — prev / ep info / next only -->
+    <div class="netflix-panel">
+
+      <div class="nfx-controls">
+
+        <!-- Prev -->
+        <button class="nfx-nav-btn" id="prevBtn" onclick="changeEpisode(currentEp-1)" disabled aria-label="previous episode">
+          <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+          <span class="lbl">prev</span>
+        </button>
+
+        <!-- Centre info -->
+        <div class="nfx-ep-info">
+          <span class="nfx-show-name">offcampus</span>
+          <span class="nfx-ep-chip" id="nowEpChip">ep 01</span>
+        </div>
+
+        <!-- Next -->
+        <button class="nfx-nav-btn" id="nextBtn" onclick="changeEpisode(currentEp+1)" aria-label="next episode">
+          <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2.5-6 5.5-4v8l-5.5-4zM16 6h2v12h-2z"/></svg>
+          <span class="lbl">next</span>
+        </button>
+
+      </div>
+
+      <!-- Episode strip -->
+      <div class="nfx-strip-row">
+        <div class="nfx-strip" id="epStrip"></div>
+      </div>
+
+    </div><!-- /netflix-panel -->
+
+  </div><!-- /player-stage -->
 </div>
 
 <div class="toast" id="toast"></div>
@@ -596,8 +687,10 @@ for (let i = 0; i < (isMobile ? 10 : 18); i++) {
 function showScreen(id) {
   ['introScreen','folderScreen','playerScreen'].forEach(s =>
     document.getElementById(s).classList.toggle('hidden', s !== id));
-  const el = document.getElementById(id === 'playerScreen' ? 'playerWrap' : id);
-  if (el) el.scrollTop = 0;
+  if (id !== 'playerScreen') {
+    const el = document.getElementById(id);
+    if (el) el.scrollTop = 0;
+  }
 }
 function goToIntro()      { showScreen('introScreen'); }
 function goToFolder()     { buildFolder(); showScreen('folderScreen'); }
@@ -627,6 +720,7 @@ function buildFolder() {
 // ── Build pill strip ──────────────────────────────
 function buildStrip() {
   const strip = document.getElementById('epStrip');
+  strip.innerHTML = '';
   episodes.forEach((ep, i) => {
     const pill = document.createElement('button');
     pill.className = 'ep-pill' + (i === 0 ? ' active' : '');
@@ -653,12 +747,52 @@ const prevBtn  = document.getElementById('prevBtn');
 const nextBtn  = document.getElementById('nextBtn');
 const navLabel = document.getElementById('navEpLabel');
 const epChip   = document.getElementById('nowEpChip');
+const driveHint = null; // removed from DOM
 
-let currentEp = -1, toastTimer, badgeTimer;
+let currentEp = -1, toastTimer, badgeTimer, hintTimer;
+
+// ── Prevent panel buttons from stealing focus from the iframe ──────────────
+// Desktop (mouse): preventDefault on mousedown stops focus shift entirely.
+// Mobile (touch): we can't preventDefault on touchstart (cancels click),
+// so instead we re-focus the iframe immediately after any button tap.
+// This gives Drive back focus so it doesn't interpret the blur as a pause trigger.
+
+function refocusIframe() {
+  // Small delay so the button click fires first, then we restore iframe focus
+  setTimeout(() => {
+    const f = document.getElementById('driveFrame');
+    if (f) {
+      // Blur any focused element (our button), then "click" into the iframe
+      // by briefly removing and re-adding pointer-events so Drive sees re-entry
+      f.style.pointerEvents = 'none';
+      requestAnimationFrame(() => { f.style.pointerEvents = ''; });
+    }
+  }, 80);
+}
+
+function blockFocusOnMouseOnly(el) {
+  // Desktop: block focus shift on mousedown
+  el.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.target.closest('button')) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  // Mobile: re-focus iframe after any button tap
+  el.addEventListener('touchend', e => {
+    if (e.target.closest('button')) {
+      refocusIframe();
+    }
+  }, { passive: true });
+}
+blockFocusOnMouseOnly(document.querySelector('.netflix-panel'));
+blockFocusOnMouseOnly(document.querySelector('.nfx-topbar'));
 
 // ── Change episode ────────────────────────────────
 function changeEpisode(idx) {
   if (idx < 0 || idx >= episodes.length) return;
+  // Don't reload iframe if already on this episode (avoids unnecessary pause)
+  if (idx === currentEp) return;
 
   loader.classList.add('show');
   fade.classList.add('active');
@@ -680,6 +814,7 @@ function changeEpisode(idx) {
 
     showBadge(title);
     showToast('▶ ' + title);
+    showDriveHint();
 
     setTimeout(() => fade.classList.remove('active'), 80);
   }, 280);
@@ -698,25 +833,111 @@ function showToast(msg) {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// ── Fullscreen ────────────────────────────────────
+function showDriveHint() {
+  if (!driveHint) return;
+  driveHint.classList.add('show');
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => driveHint.classList.remove('show'), 3000);
+}
+
+// ── Open in Drive ─────────────────────────────────
+function openInDrive() {
+  if (currentEp < 0) return;
+  window.open(episodes[currentEp].url, '_blank');
+}
+
+// ── Fullscreen + Rotation ─────────────────────────
+// Cross-origin iframes cannot be fullscreened on most mobile browsers.
+// Strategy:
+//   1. Try native fullscreen on the playerStage div (works on Android Chrome).
+//   2. If that fails / on iOS: use CSS to make playerScreen cover everything,
+//      then use Screen Orientation API to lock landscape.
+// A dedicated "fake fullscreen" state is used as universal fallback.
+
+let isFakeFs = false;
+
 function toggleFullscreen() {
-  const w = document.getElementById('videoShell');
-  const isFs = document.fullscreenElement || document.webkitFullscreenElement;
-  if (isFs) {
+  // Already in native fullscreen → exit
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
     (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    return;
+  }
+  // Already in fake fullscreen → exit
+  if (isFakeFs) { exitFakeFs(); return; }
+
+  // Try native fullscreen on stage (Android Chrome works)
+  const stage = document.getElementById('playerStage');
+  const fn = stage.requestFullscreen || stage.webkitRequestFullscreen;
+  if (fn) {
+    fn.call(stage).then(() => {
+      // Also try to lock landscape
+      tryLockLandscape();
+    }).catch(() => {
+      // Native blocked (iOS) → fake fullscreen
+      enterFakeFs();
+    });
   } else {
-    const fn = w.requestFullscreen || w.webkitRequestFullscreen;
-    if (fn) fn.call(w);
+    enterFakeFs();
   }
 }
-function updateFsIcon() {
-  const fs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-  document.getElementById('fsIcon').innerHTML = fs
+
+function tryLockLandscape() {
+  try {
+    const so = screen.orientation || screen.mozOrientation;
+    if (so && so.lock) so.lock('landscape').catch(() => {});
+  } catch(e) {}
+}
+function tryUnlockOrientation() {
+  try {
+    const so = screen.orientation || screen.mozOrientation;
+    if (so && so.unlock) so.unlock();
+  } catch(e) {}
+}
+
+function enterFakeFs() {
+  isFakeFs = true;
+  const ps = document.getElementById('playerScreen');
+  ps.classList.add('fake-fs');
+  updateFsIcon(true);
+  tryLockLandscape();
+}
+function exitFakeFs() {
+  isFakeFs = false;
+  const ps = document.getElementById('playerScreen');
+  ps.classList.remove('fake-fs');
+  updateFsIcon(false);
+  tryUnlockOrientation();
+}
+
+function updateFsIcon(isFs) {
+  if (isFs === undefined) isFs = !!(document.fullscreenElement || document.webkitFullscreenElement) || isFakeFs;
+  const svg = isFs
     ? '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>'
     : '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>';
+  const el = document.getElementById('fsIcon');
+  if (el) el.innerHTML = svg;
 }
-document.addEventListener('fullscreenchange', updateFsIcon);
-document.addEventListener('webkitfullscreenchange', updateFsIcon);
+document.addEventListener('fullscreenchange', () => {
+  updateFsIcon();
+  if (!document.fullscreenElement) tryUnlockOrientation();
+});
+document.addEventListener('webkitfullscreenchange', () => {
+  updateFsIcon();
+  if (!document.webkitFullscreenElement) tryUnlockOrientation();
+});
+
+// Handle device rotation: when user physically rotates to landscape
+// while on player screen, auto-enter fake fullscreen
+window.addEventListener('orientationchange', () => {
+  const angle = screen.orientation ? screen.orientation.angle : window.orientation;
+  const isLandscape = Math.abs(angle) === 90;
+  const onPlayer = !document.getElementById('playerScreen').classList.contains('hidden');
+  if (onPlayer && isLandscape && !isFakeFs && !document.fullscreenElement) {
+    enterFakeFs();
+  } else if (!isLandscape && isFakeFs) {
+    exitFakeFs();
+  }
+});
 
 // ── Keyboard shortcuts ────────────────────────────
 document.addEventListener('keydown', e => {
@@ -728,6 +949,20 @@ document.addEventListener('keydown', e => {
 // Prevent strip scroll from bubbling
 document.getElementById('epStrip').addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
 document.getElementById('epList') .addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
+
+// ── Keep iframe focused for mobile timeline scrubbing ─────────────────────
+// On mobile, any touch landing on the page (even passing into the iframe)
+// can blur the iframe — Drive treats this as focus-lost → pause.
+// We intercept touchstart on the video-shell and reset pointer-events on the
+// iframe so the browser re-routes the touch into it rather than the page.
+// passive:true keeps scroll/swipe performance intact.
+document.getElementById('videoShell').addEventListener('touchstart', () => {
+  const f = document.getElementById('driveFrame');
+  if (f) {
+    f.style.pointerEvents = 'none';
+    requestAnimationFrame(() => { f.style.pointerEvents = ''; });
+  }
+}, { passive: true });
 </script>
 </body>
 </html>
