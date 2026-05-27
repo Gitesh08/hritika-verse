@@ -855,6 +855,187 @@
       .intro-heart  { margin-bottom: 16px; }
       .intro-message { margin-bottom: 16px; }
     }
+
+    /* ════════════════════════════════════════
+     LANDSCAPE OVERLAY — Drive-style bottom controls
+    ════════════════════════════════════════ */
+
+    /* Root: hidden in portrait, pointer-events always none so taps reach Drive */
+    .ls-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 28;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.22s ease;
+    }
+    .ls-overlay.ls-visible { opacity: 1; }
+
+    /* Show in landscape, hide portrait-only chrome */
+    @media (orientation: landscape) {
+      .float-nav   { display: none !important; }
+      .nfx-topbar  { display: none !important; }
+      .ls-overlay  { display: block; }
+    }
+
+    /* ── Center cluster: [replay10] [►/⏸] [fwd10] ── */
+    .ls-center-cluster {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      pointer-events: auto;
+    }
+
+    /* Skip buttons (10s back / forward) */
+    .ls-skip-btn {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: rgba(28,28,28,0.78);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.55);
+      transition: background 0.15s, transform 0.12s;
+      touch-action: manipulation;
+      -webkit-appearance: none;
+    }
+    .ls-skip-btn:active {
+      background: rgba(65,65,65,0.92);
+      transform: scale(0.86);
+    }
+    .ls-skip-btn svg {
+      width: 30px;
+      height: 30px;
+      display: block;
+      fill: currentColor;
+    }
+
+    /* Centre play/pause button */
+    .ls-play-btn {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: rgba(28,28,28,0.88);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 2px 24px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.09);
+      transition: background 0.15s, transform 0.12s;
+      touch-action: manipulation;
+      -webkit-appearance: none;
+    }
+    .ls-play-btn:active {
+      background: rgba(70,70,70,0.96);
+      transform: scale(0.87);
+    }
+    .ls-play-btn svg {
+      width: 36px;
+      height: 36px;
+      display: block;
+      fill: currentColor;
+    }
+
+    /* ── Bottom control bar ── */
+    .ls-bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top,
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.65) 52%,
+        transparent 100%);
+      padding-bottom: env(safe-area-inset-bottom, 4px);
+      pointer-events: auto;
+    }
+
+    /* Thin decorative progress rail (visual only — Drive controls actual seek) */
+    .ls-progress-rail {
+      height: 3px;
+      background: rgba(255,255,255,0.20);
+      margin: 0 14px 10px;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .ls-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #fff;
+      border-radius: 2px;
+    }
+
+    /* Controls row inside bottom bar */
+    .ls-bar-row {
+      display: flex;
+      align-items: center;
+      padding: 0 4px 10px;
+      gap: 2px;
+    }
+
+    /* Icon buttons in bottom bar */
+    .ls-ctrl-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      touch-action: manipulation;
+      -webkit-appearance: none;
+      flex-shrink: 0;
+    }
+    .ls-ctrl-btn:active  { background: rgba(255,255,255,0.14); }
+    .ls-ctrl-btn:disabled { opacity: 0.28; pointer-events: none; }
+    .ls-ctrl-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+      display: block;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.7));
+    }
+
+    /* Episode label in bar */
+    .ls-ep-label {
+      flex: 1;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.85);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 10px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    /* Right button cluster in bottom bar */
+    .ls-bar-right {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 
@@ -969,6 +1150,62 @@
         </button>
       </div>
 
+      <!-- LANDSCAPE OVERLAY — Drive-style controls (portrait: hidden via CSS) -->
+      <div class="ls-overlay" id="lsOverlay">
+
+        <!-- Center cluster: 10s back │ play/pause │ 10s forward -->
+        <div class="ls-center-cluster">
+          <button class="ls-skip-btn" onclick="lsSeek(-10)" aria-label="10 seconds back">
+            <!-- replay-10 icon: circular CCW arrow with “10” -->
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+              <text x="12" y="14.8" text-anchor="middle" font-size="5.2" font-family="Jost,sans-serif" font-weight="600" fill="currentColor">10</text>
+            </svg>
+          </button>
+
+          <button class="ls-play-btn" id="lsPlayBtn" onclick="lsPlayPause()" aria-label="play or pause">
+            <svg id="lsPlayIcon" viewBox="0 0 24 24" fill="currentColor">
+              <!-- starts as pause (assumes video playing after load) -->
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+          </button>
+
+          <button class="ls-skip-btn" onclick="lsSeek(10)" aria-label="10 seconds forward">
+            <!-- forward-10 icon: circular CW arrow with “10” -->
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18 13c0 3.31-2.69 6-6 6s-6-2.69-6-6 2.69-6 6-6v4l5-5-5-5v4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8h-2z"/>
+              <text x="12" y="14.8" text-anchor="middle" font-size="5.2" font-family="Jost,sans-serif" font-weight="600" fill="currentColor">10</text>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Bottom bar: back │ episode title │ … │ prev•next•fullscreen -->
+        <div class="ls-bottom-bar">
+          <div class="ls-progress-rail"><div class="ls-progress-fill" id="lsProgressFill"></div></div>
+          <div class="ls-bar-row">
+            <!-- Back to folder -->
+            <button class="ls-ctrl-btn" onclick="goToFolder()" aria-label="back to folder">
+              <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <!-- Episode label -->
+            <span class="ls-ep-label" id="lsEpLabel">offcampus</span>
+            <!-- Right group: prev ep • next ep • fullscreen -->
+            <div class="ls-bar-right">
+              <button class="ls-ctrl-btn" id="lsPrevEpBtn" onclick="changeEpisode(currentEp-1)" disabled aria-label="previous episode">
+                <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+              </button>
+              <button class="ls-ctrl-btn" id="lsNextEpBtn" onclick="changeEpisode(currentEp+1)" aria-label="next episode">
+                <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2.5-6 5.5 3.91V8.09L8.5 12zM16 6h2v12h-2z"/></svg>
+              </button>
+              <button class="ls-ctrl-btn" onclick="toggleFullscreen()" aria-label="toggle fullscreen">
+                <svg id="lsFsIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /ls-overlay -->
+
     </div><!-- /player-stage -->
   </div>
 
@@ -1049,23 +1286,13 @@
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const navLabel = document.getElementById('navEpLabel');
-    const driveHint = null; // removed from DOM
 
     let currentEp = -1, toastTimer, badgeTimer, hintTimer;
 
-    // ── Prevent panel buttons from stealing focus from the iframe ──────────────
-    // Desktop (mouse): preventDefault on mousedown stops focus shift entirely.
-    // Mobile (touch): we can't preventDefault on touchstart (cancels click),
-    // so instead we re-focus the iframe immediately after any button tap.
-    // This gives Drive back focus so it doesn't interpret the blur as a pause trigger.
-
     function refocusIframe() {
-      // Small delay so the button click fires first, then we restore iframe focus
       setTimeout(() => {
         const f = document.getElementById('driveFrame');
         if (f) {
-          // Blur any focused element (our button), then "click" into the iframe
-          // by briefly removing and re-adding pointer-events so Drive sees re-entry
           f.style.pointerEvents = 'none';
           requestAnimationFrame(() => { f.style.pointerEvents = ''; });
         }
@@ -1213,6 +1440,8 @@
         : '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>';
       const el = document.getElementById('fsIcon');
       if (el) el.innerHTML = svg;
+      const lsEl = document.getElementById('lsFsIcon');
+      if (lsEl) lsEl.innerHTML = svg;
     }
     document.addEventListener('fullscreenchange', () => {
       updateFsIcon();
@@ -1243,8 +1472,7 @@
       if (e.code === 'ArrowLeft' && e.shiftKey) { e.preventDefault(); changeEpisode(currentEp - 1); }
     });
 
-    // Prevent strip scroll from bubbling
-    document.getElementById('epStrip').addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
+    // Prevent scroll bubbling from episode list
     document.getElementById('epList').addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
 
     // ── Keep iframe focused for mobile timeline scrubbing ─────────────────────
@@ -1260,6 +1488,115 @@
         requestAnimationFrame(() => { f.style.pointerEvents = ''; });
       }
     }, { passive: true });
+
+    // ════════════════════════════════════════════════
+    //  LANDSCAPE CONTROLS (Drive-style auto-hiding UI)
+    // ════════════════════════════════════════════════
+
+    let lsCtlTimer = null;
+    let lsIsPlaying = true; // optimistically assume playing after episode loads
+
+    function isLandscapeMode() {
+      return window.innerWidth > window.innerHeight;
+    }
+    function isPlayerVisible() {
+      return !document.getElementById('playerScreen').classList.contains('hidden');
+    }
+
+    function showLsCtl() {
+      const ov = document.getElementById('lsOverlay');
+      if (!ov) return;
+      ov.classList.add('ls-visible');
+      clearTimeout(lsCtlTimer);
+      lsCtlTimer = setTimeout(hideLsCtl, 3500);
+    }
+    function hideLsCtl() {
+      const ov = document.getElementById('lsOverlay');
+      if (ov) ov.classList.remove('ls-visible');
+      clearTimeout(lsCtlTimer);
+    }
+
+    // Sync episode labels + button states in the landscape bar
+    function updateLsLabels() {
+      if (currentEp < 0) return;
+      const lbl = document.getElementById('lsEpLabel');
+      if (lbl) lbl.textContent = 'offcampus · ' + episodes[currentEp].title;
+      const prev = document.getElementById('lsPrevEpBtn');
+      const next = document.getElementById('lsNextEpBtn');
+      if (prev) prev.disabled = currentEp === 0;
+      if (next) next.disabled = currentEp === episodes.length - 1;
+      // Assume auto-play resumes on episode load — show pause icon
+      lsIsPlaying = true;
+      updateLsPlayIcon();
+    }
+
+    function updateLsPlayIcon() {
+      const icon = document.getElementById('lsPlayIcon');
+      if (!icon) return;
+      // pause icon when playing, play icon when paused
+      icon.innerHTML = lsIsPlaying
+        ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
+        : '<path d="M8 5v14l11-7z"/>';
+    }
+
+    // Play/pause — best-effort: focus iframe + dispatch Space key
+    // (cross-origin limits this; tapping the video directly also works)
+    function lsPlayPause() {
+      const f = document.getElementById('driveFrame');
+      if (f) {
+        f.focus();
+        try {
+          f.dispatchEvent(new KeyboardEvent('keydown', {
+            key: ' ', code: 'Space', keyCode: 32, which: 32, bubbles: true
+          }));
+        } catch (e) { }
+      }
+      lsIsPlaying = !lsIsPlaying;
+      updateLsPlayIcon();
+      showLsCtl(); // reset hide timer
+    }
+
+    // Seek — best-effort: focus iframe + ArrowLeft/Right (Drive: ~5s per press)
+    function lsSeek(seconds) {
+      const f = document.getElementById('driveFrame');
+      if (f) {
+        f.focus();
+        const isBack = seconds < 0;
+        const key  = isBack ? 'ArrowLeft'  : 'ArrowRight';
+        const code = isBack ? 'ArrowLeft'  : 'ArrowRight';
+        const kc   = isBack ? 37 : 39;
+        const presses = Math.round(Math.abs(seconds) / 5); // Drive moves ~5s per arrow
+        for (let i = 0; i < presses; i++) {
+          setTimeout(() => {
+            try {
+              f.dispatchEvent(new KeyboardEvent('keydown', {
+                key, code, keyCode: kc, which: kc, bubbles: true
+              }));
+            } catch (e) { }
+          }, i * 120);
+        }
+      }
+      showLsCtl();
+    }
+
+    // Any touch/click anywhere on the player in landscape — show controls
+    // Using capture phase so we intercept before the iframe gets the event.
+    // passive:true so Drive's scroll/touch handling is not affected.
+    document.addEventListener('touchstart', () => {
+      if (isLandscapeMode() && isPlayerVisible()) showLsCtl();
+    }, { capture: true, passive: true });
+
+    document.addEventListener('mousedown', () => {
+      if (isLandscapeMode() && isPlayerVisible()) showLsCtl();
+    }, { capture: true });
+
+    // Show controls briefly when rotating into landscape
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        if (isLandscapeMode() && isPlayerVisible()) showLsCtl();
+        else hideLsCtl();
+      }, 300);
+    });
   </script>
 </body>
 
