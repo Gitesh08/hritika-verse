@@ -1,968 +1,1266 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1a0a0a">
-<title>offcampus ♡ for hritika</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1a0a0a">
+  <title>offcampus ♡ for hritika</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&family=Jost:wght@200;300;400&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-:root {
-  --rose:   #c9797a;
-  --blush:  #e8c4c4;
-  --petal:  #f5e6e6;
-  --dust:   #d4a5a5;
-  --ink:    #1a0a0a;
-  --glass:  rgba(30,12,12,0.82);
-  --safe-top:    env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left:   env(safe-area-inset-left, 0px);
-  --safe-right:  env(safe-area-inset-right, 0px);
-}
+    :root {
+      --rose: #c9797a;
+      --blush: #e8c4c4;
+      --petal: #f5e6e6;
+      --dust: #d4a5a5;
+      --ink: #1a0a0a;
+      --glass: rgba(30, 12, 12, 0.82);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
 
-html { height: -webkit-fill-available; background: var(--ink); }
+    html {
+      height: -webkit-fill-available;
+      background: var(--ink);
+    }
 
-body {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  background: var(--ink);
-  color: var(--petal);
-  font-family: 'Jost', sans-serif;
-  font-weight: 200;
-  overflow: hidden;
-  overscroll-behavior: none;
-  -webkit-tap-highlight-color: transparent;
-}
+    body {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      background: var(--ink);
+      color: var(--petal);
+      font-family: 'Jost', sans-serif;
+      font-weight: 200;
+      overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-/* ── Noise grain overlay ── */
-body::before {
-  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  background-size: 180px; opacity: 0.4;
-}
+    /* ── Noise grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size: 180px;
+      opacity: 0.4;
+    }
 
-/* ── Ambient blobs ── */
-.ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.14; animation: drift 16s ease-in-out infinite alternate; }
-.blob-1 { width: 500px; height: 500px; background: radial-gradient(circle, #c9797a, transparent); top: -140px; left: -120px; }
-.blob-2 { width: 400px; height: 400px; background: radial-gradient(circle, #e8c4c4, transparent); bottom: -100px; right: -80px; animation-delay: -6s; }
-.blob-3 { width: 300px; height: 300px; background: radial-gradient(circle, #d4a5a5, transparent); top: 40%; left: 50%; animation-delay: -10s; }
-@keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(28px,18px) scale(1.07); } }
+    /* ── Ambient blobs ── */
+    .ambient {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
 
-/* ── Petals ── */
-.petals { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
-.petal-p {
-  position: absolute; width: 5px; height: 8px; border-radius: 50% 50% 50% 0;
-  background: rgba(201,121,122,0.22); top: -20px;
-  animation: petalFall linear infinite;
-}
-@keyframes petalFall {
-  0%   { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 0.35; }
-  100% { transform: translateY(110vh) rotate(720deg) translateX(55px); opacity: 0; }
-}
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.14;
+      animation: drift 16s ease-in-out infinite alternate;
+    }
 
-/* ── Screen system ── */
-.screen {
-  position: fixed; inset: 0; z-index: 10;
-  display: flex; flex-direction: column; align-items: center;
-  transition: opacity 0.55s ease, transform 0.55s ease;
-  overflow: hidden;
-}
-.screen.hidden { opacity: 0; pointer-events: none; transform: scale(0.97); }
+    .blob-1 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #c9797a, transparent);
+      top: -140px;
+      left: -120px;
+    }
 
-/* ════════════════════════════════════════
+    .blob-2 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #e8c4c4, transparent);
+      bottom: -100px;
+      right: -80px;
+      animation-delay: -6s;
+    }
+
+    .blob-3 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, #d4a5a5, transparent);
+      top: 40%;
+      left: 50%;
+      animation-delay: -10s;
+    }
+
+    @keyframes drift {
+      from {
+        transform: translate(0, 0) scale(1);
+      }
+
+      to {
+        transform: translate(28px, 18px) scale(1.07);
+      }
+    }
+
+    /* ── Petals ── */
+    .petals {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .petal-p {
+      position: absolute;
+      width: 5px;
+      height: 8px;
+      border-radius: 50% 50% 50% 0;
+      background: rgba(201, 121, 122, 0.22);
+      top: -20px;
+      animation: petalFall linear infinite;
+    }
+
+    @keyframes petalFall {
+      0% {
+        transform: translateY(0) rotate(0deg) translateX(0);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 0.35;
+      }
+
+      100% {
+        transform: translateY(110vh) rotate(720deg) translateX(55px);
+        opacity: 0;
+      }
+    }
+
+    /* ── Screen system ── */
+    .screen {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: opacity 0.55s ease, transform 0.55s ease;
+      overflow: hidden;
+    }
+
+    .screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.97);
+    }
+
+    /* ════════════════════════════════════════
    SCREEN 1 — INTRO
 ════════════════════════════════════════ */
-#introScreen {
-  justify-content: center;
-  padding: calc(32px + var(--safe-top)) calc(24px + var(--safe-left)) calc(32px + var(--safe-bottom)) calc(24px + var(--safe-right));
-  gap: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
+    #introScreen {
+      justify-content: center;
+      padding: calc(32px + var(--safe-top)) calc(24px + var(--safe-left)) calc(32px + var(--safe-bottom)) calc(24px + var(--safe-right));
+      gap: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
-.intro-tag {
-  font-size: 10px; letter-spacing: 0.3em; color: var(--dust); text-transform: uppercase;
-  opacity: 0; animation: fadeUp 1s ease forwards 0.3s;
-}
-.intro-title {
-  font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic;
-  font-size: clamp(52px, 15vw, 96px); line-height: 1;
-  color: var(--petal); letter-spacing: -0.02em;
-  margin: 12px 0 6px;
-  opacity: 0; animation: fadeUp 1s ease forwards 0.55s;
-}
-.intro-heart {
-  font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
-  font-size: clamp(13px, 3.5vw, 16px); color: var(--rose); letter-spacing: 0.2em;
-  opacity: 0; animation: fadeUp 1s ease forwards 0.8s;
-  margin-bottom: 32px;
-}
-.intro-message {
-  width: min(480px, 92vw);
-  background: rgba(40,18,18,0.52); border: 1px solid rgba(201,121,122,0.15);
-  border-radius: 18px; padding: 20px 22px; margin-bottom: 32px;
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  opacity: 0; animation: fadeUp 1s ease forwards 1.0s;
-}
-.intro-message-label {
-  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
-  color: rgba(201,121,122,0.55); margin-bottom: 12px;
-  display: flex; align-items: center; gap: 8px;
-}
-.intro-message-label::after { content: ''; flex: 1; height: 1px; background: rgba(201,121,122,0.14); }
-.intro-message p {
-  font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
-  font-size: clamp(14px, 3.8vw, 16px); line-height: 1.8;
-  color: var(--blush); letter-spacing: 0.03em;
-}
-.intro-message p + p { margin-top: 10px; }
-.intro-message-sig { margin-top: 16px; font-size: 11px; letter-spacing: 0.18em; color: rgba(201,121,122,0.5); text-align: right; }
+    .intro-tag {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--dust);
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 0.3s;
+    }
 
-.intro-btn {
-  background: none; border: 1px solid rgba(201,121,122,0.32); border-radius: 40px;
-  padding: 14px 44px; color: var(--blush);
-  font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 0.24em;
-  cursor: pointer; -webkit-appearance: none; touch-action: manipulation;
-  transition: background 0.3s, border-color 0.3s, color 0.3s, transform 0.2s;
-  opacity: 0; animation: fadeUp 1s ease forwards 1.25s;
-}
-.intro-btn:hover  { background: rgba(201,121,122,0.1); border-color: rgba(201,121,122,0.55); color: var(--petal); transform: translateY(-2px); }
-.intro-btn:active { background: rgba(201,121,122,0.18); transform: scale(0.97); }
+    .intro-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(52px, 15vw, 96px);
+      line-height: 1;
+      color: var(--petal);
+      letter-spacing: -0.02em;
+      margin: 12px 0 6px;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 0.55s;
+    }
 
-.credit {
-  font-size: 10px; letter-spacing: 0.14em; color: rgba(212,165,165,0.32);
-  margin-top: 28px; white-space: nowrap;
-  opacity: 0; animation: fadeUp 1s ease forwards 1.6s;
-}
-.credit span { color: rgba(201,121,122,0.5); }
+    .intro-heart {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(13px, 3.5vw, 16px);
+      color: var(--rose);
+      letter-spacing: 0.2em;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 0.8s;
+      margin-bottom: 32px;
+    }
 
-/* ════════════════════════════════════════
+    .intro-message {
+      width: min(480px, 92vw);
+      background: rgba(40, 18, 18, 0.52);
+      border: 1px solid rgba(201, 121, 122, 0.15);
+      border-radius: 18px;
+      padding: 20px 22px;
+      margin-bottom: 32px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 1.0s;
+    }
+
+    .intro-message-label {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(201, 121, 122, 0.55);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .intro-message-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(201, 121, 122, 0.14);
+    }
+
+    .intro-message p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(14px, 3.8vw, 16px);
+      line-height: 1.8;
+      color: var(--blush);
+      letter-spacing: 0.03em;
+    }
+
+    .intro-message p+p {
+      margin-top: 10px;
+    }
+
+    .intro-message-sig {
+      margin-top: 16px;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      color: rgba(201, 121, 122, 0.5);
+      text-align: right;
+    }
+
+    .intro-btn {
+      background: none;
+      border: 1px solid rgba(201, 121, 122, 0.32);
+      border-radius: 40px;
+      padding: 14px 44px;
+      color: var(--blush);
+      font-family: 'Jost', sans-serif;
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.24em;
+      cursor: pointer;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+      transition: background 0.3s, border-color 0.3s, color 0.3s, transform 0.2s;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 1.25s;
+    }
+
+    .intro-btn:hover {
+      background: rgba(201, 121, 122, 0.1);
+      border-color: rgba(201, 121, 122, 0.55);
+      color: var(--petal);
+      transform: translateY(-2px);
+    }
+
+    .intro-btn:active {
+      background: rgba(201, 121, 122, 0.18);
+      transform: scale(0.97);
+    }
+
+    .credit {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: rgba(212, 165, 165, 0.32);
+      margin-top: 28px;
+      white-space: nowrap;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 1.6s;
+    }
+
+    .credit span {
+      color: rgba(201, 121, 122, 0.5);
+    }
+
+    /* ════════════════════════════════════════
    SCREEN 2 — FOLDER / EPISODE LIST
 ════════════════════════════════════════ */
-#folderScreen {
-  justify-content: flex-start;
-  padding-top: calc(64px + var(--safe-top));
-  padding-bottom: calc(20px + var(--safe-bottom));
-  padding-left: calc(16px + var(--safe-left));
-  padding-right: calc(16px + var(--safe-right));
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
+    #folderScreen {
+      justify-content: flex-start;
+      padding-top: calc(64px + var(--safe-top));
+      padding-bottom: calc(20px + var(--safe-bottom));
+      padding-left: calc(16px + var(--safe-left));
+      padding-right: calc(16px + var(--safe-right));
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
-/* fixed top bar on folder screen */
-.folder-topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: calc(56px + var(--safe-top));
-  padding-top: var(--safe-top);
-  display: flex; align-items: center; justify-content: space-between;
-  padding-left: calc(8px + var(--safe-left));
-  padding-right: calc(8px + var(--safe-right));
-  background: linear-gradient(to bottom, rgba(26,10,10,0.95) 70%, transparent);
-  z-index: 50;
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-}
-.folder-topbar-title {
-  font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
-  font-size: 18px; letter-spacing: 0.1em; color: var(--petal);
-}
+    /* fixed top bar on folder screen */
+    .folder-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: calc(56px + var(--safe-top));
+      padding-top: var(--safe-top);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: calc(8px + var(--safe-left));
+      padding-right: calc(8px + var(--safe-right));
+      background: linear-gradient(to bottom, rgba(26, 10, 10, 0.95) 70%, transparent);
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
 
-.icon-btn {
-  background: none; border: none; color: var(--dust); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  width: 44px; height: 44px; border-radius: 50%;
-  transition: background 0.2s, color 0.2s;
-  touch-action: manipulation; -webkit-appearance: none;
-  flex-shrink: 0;
-}
-.icon-btn:hover  { background: rgba(201,121,122,0.1); color: var(--petal); }
-.icon-btn:active { background: rgba(201,121,122,0.2); }
-.icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
+    .folder-topbar-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 18px;
+      letter-spacing: 0.1em;
+      color: var(--petal);
+    }
 
-.folder-hero {
-  text-align: center; padding: 4px 0 20px;
-  width: 100%; max-width: 480px; margin: 0 auto;
-  opacity: 0; animation: fadeUp 0.6s ease forwards 0.1s;
-}
-.folder-icon-wrap {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 60px; height: 60px; border-radius: 16px;
-  background: rgba(201,121,122,0.1); border: 1px solid rgba(201,121,122,0.2);
-  margin-bottom: 12px;
-}
-.folder-icon-wrap svg { width: 28px; height: 28px; fill: var(--rose); }
-.folder-name {
-  font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
-  font-size: clamp(22px, 6vw, 30px); letter-spacing: 0.08em; color: var(--petal);
-}
-.folder-sub { font-size: 11px; letter-spacing: 0.14em; color: var(--dust); margin-top: 4px; }
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--dust);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      transition: background 0.2s, color 0.2s;
+      touch-action: manipulation;
+      -webkit-appearance: none;
+      flex-shrink: 0;
+    }
 
-.ep-list {
-  width: 100%; max-width: 480px; margin: 0 auto;
-  display: flex; flex-direction: column; gap: 8px;
-}
+    .icon-btn:hover {
+      background: rgba(201, 121, 122, 0.1);
+      color: var(--petal);
+    }
 
-.ep-row {
-  display: flex; align-items: center; gap: 14px;
-  background: rgba(40,18,18,0.58); border: 1px solid rgba(201,121,122,0.1);
-  border-radius: 14px; padding: 14px 16px;
-  cursor: pointer; text-align: left; width: 100%;
-  color: inherit; font-family: inherit; -webkit-appearance: none;
-  touch-action: manipulation; -webkit-user-select: none; user-select: none;
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  transition: background 0.2s, border-color 0.2s, transform 0.15s;
-  opacity: 0; animation: fadeUp 0.45s ease forwards;
-}
-.ep-row:active { background: rgba(201,121,122,0.16); border-color: rgba(201,121,122,0.32); transform: scale(0.985); }
-.ep-num {
-  font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 20px; color: rgba(201,121,122,0.45); min-width: 26px; line-height: 1;
-}
-.ep-info { flex: 1; min-width: 0; }
-.ep-title-text { font-size: 13px; font-weight: 300; letter-spacing: 0.1em; color: var(--petal); }
-.ep-meta { font-size: 10px; letter-spacing: 0.07em; color: var(--dust); margin-top: 2px; }
-.ep-play-icon { color: rgba(201,121,122,0.38); flex-shrink: 0; }
-.ep-play-icon svg { width: 15px; height: 15px; fill: currentColor; display: block; }
+    .icon-btn:active {
+      background: rgba(201, 121, 122, 0.2);
+    }
 
-.folder-credit {
-  text-align: center; margin-top: 28px; padding-bottom: 8px;
-  font-size: 10px; letter-spacing: 0.14em; color: rgba(212,165,165,0.3);
-}
-.folder-credit span { color: rgba(201,121,122,0.48); }
+    .icon-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
 
-/* ════════════════════════════════════════
-   SCREEN 3 — PLAYER  (Netflix-style)
+    .folder-hero {
+      text-align: center;
+      padding: 4px 0 20px;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.1s;
+    }
+
+    .folder-icon-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: rgba(201, 121, 122, 0.1);
+      border: 1px solid rgba(201, 121, 122, 0.2);
+      margin-bottom: 12px;
+    }
+
+    .folder-icon-wrap svg {
+      width: 28px;
+      height: 28px;
+      fill: var(--rose);
+    }
+
+    .folder-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(22px, 6vw, 30px);
+      letter-spacing: 0.08em;
+      color: var(--petal);
+    }
+
+    .folder-sub {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--dust);
+      margin-top: 4px;
+    }
+
+    .ep-list {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ep-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(40, 18, 18, 0.58);
+      border: 1px solid rgba(201, 121, 122, 0.1);
+      border-radius: 14px;
+      padding: 14px 16px;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      color: inherit;
+      font-family: inherit;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      opacity: 0;
+      animation: fadeUp 0.45s ease forwards;
+    }
+
+    .ep-row:active {
+      background: rgba(201, 121, 122, 0.16);
+      border-color: rgba(201, 121, 122, 0.32);
+      transform: scale(0.985);
+    }
+
+    .ep-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 20px;
+      color: rgba(201, 121, 122, 0.45);
+      min-width: 26px;
+      line-height: 1;
+    }
+
+    .ep-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ep-title-text {
+      font-size: 13px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: var(--petal);
+    }
+
+    .ep-meta {
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      color: var(--dust);
+      margin-top: 2px;
+    }
+
+    .ep-play-icon {
+      color: rgba(201, 121, 122, 0.38);
+      flex-shrink: 0;
+    }
+
+    .ep-play-icon svg {
+      width: 15px;
+      height: 15px;
+      fill: currentColor;
+      display: block;
+    }
+
+    .folder-credit {
+      text-align: center;
+      margin-top: 28px;
+      padding-bottom: 8px;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: rgba(212, 165, 165, 0.3);
+    }
+
+    .folder-credit span {
+      color: rgba(201, 121, 122, 0.48);
+    }
+
+    /* ════════════════════════════════════════
+   SCREEN 3 — PLAYER  (Drive-native style)
 ════════════════════════════════════════ */
-#playerScreen {
-  justify-content: flex-start;
-  padding: 0;
-  overflow: hidden;
-  background: #000;
-  /* screen is already position:fixed inset:0 — player fills it fully */
-}
+    #playerScreen {
+      justify-content: flex-start;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+    }
 
-/* ── Player stage: full flex column inside the screen ── */
-/* NOT position:fixed — screen already handles that */
-.player-stage {
-  width: 100%; height: 100%;
-  background: #000;
-  display: flex; flex-direction: column;
-  overflow: hidden;
-}
+    /* ── Player stage: fills screen completely ── */
+    .player-stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
 
-/* ── TOP BAR: in-flow, always first child, stays on top of video ── */
-.nfx-topbar {
-  flex: 0 0 auto;
-  display: flex; align-items: center;
-  width: 100%;
-  height: calc(46px + var(--safe-top));
-  padding-top: var(--safe-top);
-  padding-left: calc(4px + var(--safe-left));
-  padding-right: calc(8px + var(--safe-right));
-  gap: 2px;
-  background: linear-gradient(to bottom, rgba(14,5,5,0.98) 60%, rgba(14,5,5,0.0));
-  position: relative; z-index: 30;
-  /* Visually overlap the video below by pulling it up */
-  margin-bottom: -46px;
-  pointer-events: none;
-}
-.nfx-topbar > * { pointer-events: auto; }
+    /* ── VIDEO SHELL: absolute, fills entire stage ── */
+    .video-shell {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      overflow: hidden;
+    }
 
-.nfx-back-btn, .nfx-fs-btn {
-  background: none; border: none;
-  width: 42px; height: 42px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  color: rgba(245,230,230,0.9); cursor: pointer;
-  -webkit-appearance: none; touch-action: manipulation;
-  transition: background 0.15s, color 0.15s;
-  flex-shrink: 0;
-}
-.nfx-back-btn:active, .nfx-fs-btn:active {
-  background: rgba(201,121,122,0.2); color: var(--petal);
-}
-.nfx-back-btn svg, .nfx-fs-btn svg { width: 20px; height: 20px; fill: currentColor; }
+    /* iframe fills shell perfectly — never cropped */
+    .drive-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000;
+    }
 
-.nfx-ep-label {
-  flex: 1; text-align: center;
-  font-size: 11px; letter-spacing: 0.13em; color: rgba(232,196,196,0.72);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  padding: 0 2px;
-  font-family: 'Jost', sans-serif; font-weight: 300;
-}
+    /* ── TOP BAR: overlays video with Drive-style gradient ── */
+    .nfx-topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      height: calc(52px + var(--safe-top));
+      padding-top: var(--safe-top);
+      padding-left: calc(4px + var(--safe-left));
+      padding-right: calc(8px + var(--safe-right));
+      gap: 2px;
+      /* Deep black fade — perfectly masks Drive's own top bar */
+      background: linear-gradient(to bottom,
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.72) 55%,
+        rgba(0,0,0,0.0) 100%);
+      z-index: 30;
+      pointer-events: none;
+    }
 
-/* ── VIDEO SHELL: takes all remaining space ── */
-.video-shell {
-  position: relative;
-  width: 100%;
-  flex: 1 1 auto;
-  min-height: 0;
-  background: #000;
-  overflow: hidden;
-}
+    .nfx-topbar > * {
+      pointer-events: auto;
+    }
 
-/* iframe: overshoot on all sides to hide Drive's title bar (~52px top)
-   and Drive's bottom chrome (~120px on mobile).
-   overflow:hidden on .video-shell clips it cleanly. */
-.drive-frame {
-  position: absolute;
-  top: -52px; left: 0;
-  width: 100%;
-  height: calc(100% + 172px);
-  border: none;
-  background: #000;
-}
+    /* Back & fullscreen buttons — Drive-style: clean circles */
+    .nfx-back-btn,
+    .nfx-fs-btn {
+      background: none;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      cursor: pointer;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
 
-/* Blocks touches on Drive's bottom chrome (settings, CC, speed, fullscreen).
-   Tapping those Drive controls causes a page-level focus shift → pause.
-   Since we have our own controls below, we block that region entirely. */
-.drive-touch-blocker {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 110px;
-  z-index: 4;
-  background: transparent;
-}
-/* Also block Drive's top title bar */
-.drive-touch-blocker-top {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 60px;
-  z-index: 4;
-  background: transparent;
-}
+    .nfx-back-btn:active,
+    .nfx-fs-btn:active {
+      background: rgba(255,255,255,0.15);
+    }
 
-/* loading overlay */
-.vid-loader {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(10,3,3,0.78);
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.3s; z-index: 5;
-}
-.vid-loader.show { opacity: 1; pointer-events: auto; }
-.spin-ring {
-  width: 36px; height: 36px; border-radius: 50%;
-  border: 2px solid rgba(201,121,122,0.18);
-  border-top-color: var(--rose); animation: spin 0.75s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+    .nfx-back-btn svg,
+    .nfx-fs-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));
+    }
 
-/* fade transition */
-.vid-fade {
-  position: absolute; inset: 0; background: #000;
-  opacity: 0; pointer-events: none; z-index: 8;
-  transition: opacity 0.25s ease;
-}
-.vid-fade.active { opacity: 1; }
+    /* Title label in the top bar */
+    .nfx-ep-label {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.13em;
+      color: rgba(255,255,255,0.82);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 4px;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    }
 
-/* episode badge top-left of video */
-.ep-badge {
-  position: absolute; top: 52px; left: 10px; z-index: 9;
-  background: rgba(8,2,2,0.9); border: 1px solid rgba(201,121,122,0.22);
-  border-radius: 20px; padding: 4px 11px;
-  font-size: 10px; letter-spacing: 0.14em; color: var(--dust);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  pointer-events: none; opacity: 0; transition: opacity 0.35s;
-}
-.ep-badge.show { opacity: 1; }
+    /* ── Floating Prev / Next nav buttons ── */
+    /* Positioned at vertical center of screen, on left/right edges */
+    .float-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 25;
+      pointer-events: auto;
+    }
+    .float-nav-prev {
+      left: calc(12px + var(--safe-left));
+    }
+    .float-nav-next {
+      right: calc(12px + var(--safe-right));
+    }
 
-/* ════════════════════════════════════════
-   BOTTOM PANEL — prev / info / next
-════════════════════════════════════════ */
-.netflix-panel {
-  flex: 0 0 auto;
-  width: 100%;
-  background: linear-gradient(to bottom, #0d0404, #080202);
-  border-top: 1px solid rgba(201,121,122,0.12);
-  display: flex; flex-direction: column;
-  padding-bottom: max(var(--safe-bottom), 8px);
-  z-index: 20;
-}
+    .nfx-nav-btn {
+      background: rgba(28,28,28,0.80);
+      border: none;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      cursor: pointer;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+      transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
 
-/* ── Single controls row: prev | info | next ── */
-.nfx-controls {
-  display: flex; align-items: center;
-  padding: 8px 12px 6px;
-  gap: 8px;
-}
+    .nfx-nav-btn:hover {
+      background: rgba(55,55,55,0.90);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.12);
+    }
 
-/* Prev / Next nav buttons */
-.nfx-nav-btn {
-  background: rgba(201,121,122,0.07);
-  border: 1px solid rgba(201,121,122,0.18);
-  width: 52px; height: 52px; border-radius: 50%;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  color: rgba(245,230,230,0.82); cursor: pointer;
-  -webkit-appearance: none; touch-action: manipulation;
-  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
-  gap: 2px; flex-shrink: 0;
-}
-.nfx-nav-btn:active {
-  background: rgba(201,121,122,0.22); border-color: rgba(201,121,122,0.5);
-  transform: scale(0.92); color: var(--petal);
-}
-.nfx-nav-btn svg { width: 20px; height: 20px; fill: currentColor; display: block; }
-.nfx-nav-btn .lbl {
-  font-size: 7px; letter-spacing: 0.06em; color: rgba(212,165,165,0.4);
-  line-height: 1; font-family: 'Jost', sans-serif; font-weight: 300;
-}
-.nfx-nav-btn:disabled { opacity: 0.2; pointer-events: none; }
+    .nfx-nav-btn:active {
+      background: rgba(80,80,80,0.95);
+      transform: scale(0.90);
+    }
 
-/* Centre info block */
-.nfx-ep-info {
-  flex: 1;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 4px; overflow: hidden;
-}
-.nfx-show-name {
-  font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
-  font-size: 15px; letter-spacing: 0.06em; color: var(--petal);
-  white-space: nowrap;
-}
-.nfx-ep-chip {
-  font-size: 9px; letter-spacing: 0.16em; color: var(--rose);
-  background: rgba(201,121,122,0.1); border: 1px solid rgba(201,121,122,0.22);
-  border-radius: 20px; padding: 2px 10px; white-space: nowrap;
-  font-family: 'Jost', sans-serif; font-weight: 300;
-}
+    .nfx-nav-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #fff;
+      display: block;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));
+    }
 
-/* ── Episode strip ── */
-.nfx-strip-row {
-  padding: 0px 14px 2px;
-  border-top: 1px solid rgba(201,121,122,0.07);
-}
-.nfx-strip {
-  display: flex; gap: 5px; overflow-x: auto;
-  padding: 6px 0 4px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-.nfx-strip::-webkit-scrollbar { display: none; }
-.ep-pill {
-  flex-shrink: 0;
-  background: rgba(24,10,10,0.9); border: 1px solid rgba(201,121,122,0.13);
-  border-radius: 16px; padding: 4px 11px;
-  font-family: 'Jost', sans-serif; font-size: 9px; font-weight: 300;
-  letter-spacing: 0.1em; color: var(--dust); cursor: pointer;
-  white-space: nowrap; touch-action: manipulation; -webkit-appearance: none;
-  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
-}
-.ep-pill:active  { transform: scale(0.94); }
-.ep-pill.active  {
-  background: rgba(201,121,122,0.18); border-color: rgba(201,121,122,0.5);
-  color: var(--petal);
-}
+    .nfx-nav-btn .lbl {
+      display: none;
+    }
 
-/* ── Toast ── */
-.toast {
-  position: fixed; bottom: 180px; left: 50%; transform: translateX(-50%);
-  background: rgba(12,4,4,0.95); border: 1px solid rgba(201,121,122,0.22);
-  border-radius: 20px; padding: 7px 18px;
-  font-size: 11px; letter-spacing: 0.08em; color: var(--petal);
-  pointer-events: none; opacity: 0; z-index: 400;
-  transition: opacity 0.28s;
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  white-space: nowrap;
-}
-.toast.show { opacity: 1; }
+    .nfx-nav-btn:disabled {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-/* ── Animations ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+    /* ── Loading overlay ── */
+    .vid-loader {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.72);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 5;
+    }
 
-/* ── Fullscreen: hide our panel, let Drive fill everything ── */
-.player-stage:fullscreen       { background: #000; }
-.player-stage:-webkit-full-screen { background: #000; }
-.player-stage:fullscreen .nfx-topbar,
-.player-stage:-webkit-full-screen .nfx-topbar { display: none; }
-.player-stage:fullscreen .netflix-panel,
-.player-stage:-webkit-full-screen .netflix-panel { display: none; }
-.player-stage:fullscreen .drive-frame,
-.player-stage:-webkit-full-screen .drive-frame { top: 0; height: 100%; }
+    .vid-loader.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
-/* ── Fake fullscreen (iOS / fallback) ── */
-/* Covers entire viewport, hides the panel, video fills everything */
-#playerScreen.fake-fs {
-  z-index: 9999;
-  background: #000;
-}
-#playerScreen.fake-fs .netflix-panel {
-  display: none;
-}
-#playerScreen.fake-fs .nfx-topbar {
-  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 60%, transparent);
-}
-#playerScreen.fake-fs .drive-frame {
-  top: -52px;
-  height: calc(100% + 172px);
-}
-/* In landscape the video-shell can grow to fill without the panel */
-#playerScreen.fake-fs .video-shell {
-  flex: 1 1 100%;
-}
+    .spin-ring {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2.5px solid rgba(255,255,255,0.12);
+      border-top-color: #fff;
+      animation: spin 0.72s linear infinite;
+    }
 
-/* ── Responsive tweaks ── */
-@media (max-width: 390px) {
-  .intro-title { font-size: 46px; }
-  .nfx-nav-btn { width: 44px; height: 44px; }
-  .nfx-nav-btn svg { width: 17px; height: 17px; }
-  .nfx-controls { padding: 6px 10px 4px; }
-}
-@media (min-width: 600px) {
-  .player-stage { max-width: 600px; margin: 0 auto; }
-  #playerScreen { align-items: center; }
-}
-@media (max-height: 500px) and (orientation: landscape) {
-  .intro-title  { font-size: 38px; margin: 6px 0 4px; }
-  .intro-heart  { margin-bottom: 16px; }
-  .intro-message { margin-bottom: 16px; }
-  .nfx-strip-row { display: none; }
-  .nfx-controls  { padding: 4px 10px; }
-}
-</style>
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Fade transition between episodes ── */
+    .vid-fade {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 8;
+      transition: opacity 0.25s ease;
+    }
+
+    .vid-fade.active {
+      opacity: 1;
+    }
+
+    /* ── Episode badge (brief overlay after switching) ── */
+    .ep-badge {
+      position: absolute;
+      top: calc(56px + var(--safe-top));
+      left: calc(12px + var(--safe-left));
+      z-index: 29;
+      background: rgba(28,28,28,0.85);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.35s;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+
+    .ep-badge.show {
+      opacity: 1;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(28,28,28,0.92);
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.9);
+      pointer-events: none;
+      opacity: 0;
+      z-index: 400;
+      transition: opacity 0.28s;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      white-space: nowrap;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.5);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Native fullscreen ── */
+    .player-stage:fullscreen,
+    .player-stage:-webkit-full-screen {
+      background: #000;
+      max-width: 100% !important;
+      width: 100%;
+    }
+
+    /* ── Fake fullscreen (iOS fallback) ── */
+    #playerScreen.fake-fs {
+      z-index: 9999;
+      background: #000;
+    }
+
+    #playerScreen.fake-fs .nfx-topbar {
+      background: linear-gradient(to bottom,
+        rgba(0,0,0,0.85) 0%,
+        rgba(0,0,0,0.55) 60%,
+        transparent 100%);
+    }
+
+    /* ── Max-width cap on wider phones (portrait) ── */
+    @media (min-width: 600px) {
+      .player-stage {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      #playerScreen {
+        align-items: center;
+      }
+    }
+
+    /* Always full-width in landscape / fullscreen */
+    @media (orientation: landscape) {
+      .player-stage {
+        max-width: 100% !important;
+        width: 100%;
+      }
+    }
+    #playerScreen.fake-fs .player-stage {
+      max-width: 100% !important;
+      width: 100%;
+    }
+
+    /* Landscape compact tweaks for intro/folder screens */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .intro-title  { font-size: 38px; margin: 6px 0 4px; }
+      .intro-heart  { margin-bottom: 16px; }
+      .intro-message { margin-bottom: 16px; }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="ambient">
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
-</div>
-<div class="petals" id="petals"></div>
+  <div class="ambient">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+  <div class="petals" id="petals"></div>
 
-<!-- ══════════════════════════════════════
+  <!-- ══════════════════════════════════════
      SCREEN 1 · INTRO
 ══════════════════════════════════════ -->
-<div class="screen" id="introScreen">
-  <p class="intro-tag">a little something</p>
-  <h1 class="intro-title">offcampus</h1>
-  <p class="intro-heart">for hritika, with love ♡</p>
+  <div class="screen" id="introScreen">
+    <p class="intro-tag">a little something</p>
+    <h1 class="intro-title">offcampus</h1>
+    <p class="intro-heart">for hritika, with love ♡</p>
 
-  <div class="intro-message">
-    <p class="intro-message-label">a note</p>
-    <p>hey hritika — so i put together all 8 episodes of offcampus, just for you. because i know how much you love this show, and honestly you deserve to have it in the most beautiful way possible.</p>
-    <p>pick an episode, sit back, and enjoy every single moment. this one's yours. ♡</p>
-    <p class="intro-message-sig">— Gitesh</p>
+    <div class="intro-message">
+      <p class="intro-message-label">a note</p>
+      <p>hey hritika — so i put together all 8 episodes of offcampus, just for you. because i know how much you love
+        this show, and honestly you deserve to have it in the most beautiful way possible.</p>
+      <p>pick an episode, sit back, and enjoy every single moment. this one's yours. ♡</p>
+      <p class="intro-message-sig">— Gitesh</p>
+    </div>
+
+    <button class="intro-btn" onclick="goToFolder()">open your folder</button>
+    <p class="credit">made with love by <span>Gitesh</span> ♡</p>
   </div>
 
-  <button class="intro-btn" onclick="goToFolder()">open your folder</button>
-  <p class="credit">made with love by <span>Gitesh</span> ♡</p>
-</div>
-
-<!-- ══════════════════════════════════════
+  <!-- ══════════════════════════════════════
      SCREEN 2 · FOLDER
 ══════════════════════════════════════ -->
-<div class="screen hidden" id="folderScreen">
+  <div class="screen hidden" id="folderScreen">
 
-  <div class="folder-topbar">
-    <button class="icon-btn" onclick="goToIntro()" aria-label="back">
-      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-    </button>
-    <span class="folder-topbar-title">offcampus</span>
-    <div style="width:44px"></div><!-- spacer -->
-  </div>
-
-  <div style="width:100%; max-width:480px; margin:0 auto; padding: 0 16px;">
-    <div class="folder-hero">
-      <div class="folder-icon-wrap">
-        <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-      </div>
-      <p class="folder-name">offcampus</p>
-      <p class="folder-sub" id="folderCount">8 episodes · just for you</p>
+    <div class="folder-topbar">
+      <button class="icon-btn" onclick="goToIntro()" aria-label="back">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg>
+      </button>
+      <span class="folder-topbar-title">offcampus</span>
+      <div style="width:44px"></div><!-- spacer -->
     </div>
 
-    <div class="ep-list" id="epList"></div>
+    <div style="width:100%; max-width:480px; margin:0 auto; padding: 0 16px;">
+      <div class="folder-hero">
+        <div class="folder-icon-wrap">
+          <svg viewBox="0 0 24 24">
+            <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+          </svg>
+        </div>
+        <p class="folder-name">offcampus</p>
+        <p class="folder-sub" id="folderCount">8 episodes · just for you</p>
+      </div>
 
-    <p class="folder-credit">made with love by <span>Gitesh</span> ♡</p>
+      <div class="ep-list" id="epList"></div>
+
+      <p class="folder-credit">made with love by <span>Gitesh</span> ♡</p>
+    </div>
+
   </div>
 
-</div>
-
-<!-- ══════════════════════════════════════
+  <!-- ══════════════════════════════════════
      SCREEN 3 · PLAYER
 ══════════════════════════════════════ -->
-<div class="screen hidden" id="playerScreen">
+  <div class="screen hidden" id="playerScreen">
 
-  <div class="player-stage" id="playerStage">
+    <div class="player-stage" id="playerStage">
 
-    <!-- TOP BAR — overlays video with gradient fade -->
-    <div class="nfx-topbar">
-      <button class="nfx-back-btn" onclick="goToFolder()" aria-label="back">
-        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-      </button>
-      <span class="nfx-ep-label" id="navEpLabel">offcampus</span>
-      <button class="nfx-fs-btn" onclick="toggleFullscreen()" aria-label="fullscreen">
-        <svg id="fsIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-      </button>
-    </div>
+      <!-- VIDEO AREA — fills entire stage, zero cropping -->
+      <div class="video-shell" id="videoShell">
+        <iframe id="driveFrame" class="drive-frame" src=""
+          allow="autoplay; fullscreen; picture-in-picture; screen-wake-lock" loading="lazy"></iframe>
+        <div class="vid-loader" id="vidLoader">
+          <div class="spin-ring"></div>
+        </div>
+        <div class="vid-fade" id="vidFade"></div>
+        <div class="ep-badge" id="epBadge"></div>
+      </div>
 
-    <!-- VIDEO AREA -->
-    <div class="video-shell" id="videoShell">
-      <iframe id="driveFrame" class="drive-frame" src=""
-              allow="autoplay; fullscreen; picture-in-picture; screen-wake-lock"
-              allowfullscreen loading="lazy"></iframe>
-      <!-- Blocks Drive's bottom chrome (settings/CC/speed/fullscreen) from receiving touches.
-           Those taps cause a page focus shift which Drive interprets as blur → pause. -->
-      <div class="drive-touch-blocker"></div>
-      <!-- Blocks Drive's top title bar -->
-      <div class="drive-touch-blocker-top"></div>
-      <div class="vid-loader" id="vidLoader"><div class="spin-ring"></div></div>
-      <div class="vid-fade" id="vidFade"></div>
-      <div class="ep-badge" id="epBadge"></div>
-    </div>
+      <!-- TOP BAR — overlays video, masks Drive's own top chrome -->
+      <div class="nfx-topbar">
+        <button class="nfx-back-btn" onclick="goToFolder()" aria-label="back">
+          <svg viewBox="0 0 24 24">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+          </svg>
+        </button>
+        <span class="nfx-ep-label" id="navEpLabel">offcampus</span>
+        <button class="nfx-fs-btn" onclick="toggleFullscreen()" aria-label="fullscreen">
+          <svg id="fsIcon" viewBox="0 0 24 24">
+            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+          </svg>
+        </button>
+      </div>
 
-    <!-- BOTTOM PANEL — prev / ep info / next only -->
-    <div class="netflix-panel">
-
-      <div class="nfx-controls">
-
-        <!-- Prev -->
+      <!-- FLOATING PREV — middle-left edge -->
+      <div class="float-nav float-nav-prev">
         <button class="nfx-nav-btn" id="prevBtn" onclick="changeEpisode(currentEp-1)" disabled aria-label="previous episode">
-          <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
           <span class="lbl">prev</span>
         </button>
+      </div>
 
-        <!-- Centre info -->
-        <div class="nfx-ep-info">
-          <span class="nfx-show-name">offcampus</span>
-          <span class="nfx-ep-chip" id="nowEpChip">ep 01</span>
-        </div>
-
-        <!-- Next -->
+      <!-- FLOATING NEXT — middle-right edge -->
+      <div class="float-nav float-nav-next">
         <button class="nfx-nav-btn" id="nextBtn" onclick="changeEpisode(currentEp+1)" aria-label="next episode">
-          <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2.5-6 5.5-4v8l-5.5-4zM16 6h2v12h-2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
           <span class="lbl">next</span>
         </button>
-
       </div>
 
-      <!-- Episode strip -->
-      <div class="nfx-strip-row">
-        <div class="nfx-strip" id="epStrip"></div>
-      </div>
+    </div><!-- /player-stage -->
+  </div>
 
-    </div><!-- /netflix-panel -->
+  <div class="toast" id="toast"></div>
 
-  </div><!-- /player-stage -->
-</div>
+  <script>
+    // ══════════════════════════════════════════════════
+    //  EPISODES
+    // ══════════════════════════════════════════════════
+    const episodes = [
+      { title: "ep 01", url: "https://drive.google.com/file/d/1XkJESG17JR4I7zaUP3jDHNAjEsCFkjhC/view?usp=sharing" },
+      { title: "ep 02", url: "https://drive.google.com/file/d/1fWLwxt8azrRRNIZ5PF9ETxoOBEC2Vavj/view?usp=sharing" },
+      { title: "ep 03", url: "https://drive.google.com/file/d/1gbMeraLN_fZaHgB9oGyzUkuWWRa5J6ci/view?usp=sharing" },
+      { title: "ep 04", url: "https://drive.google.com/file/d/1qOz2-lM1ajgbHpnnMl7KYxNAvvw08hGl/view?usp=sharing" },
+      { title: "ep 05", url: "https://drive.google.com/file/d/1Qb0w8AUFEApCITZaH3_XAQkZTMOt1DJQ/view?usp=sharing" },
+      { title: "ep 06", url: "https://drive.google.com/file/d/15MKmHknM73f-o0yCNt8JGf9I2tT5A3WM/view?usp=sharing" },
+      { title: "ep 07", url: "https://drive.google.com/file/d/1vV1e7fjZBr2v9jZmo08CYkUJB-v1gJAs/view?usp=sharing" },
+      { title: "ep 08", url: "https://drive.google.com/file/d/1z0X_S0P55v3Z_ucIjkKzsAurSBf1HPk-/view?usp=sharing" },
+    ];
 
-<div class="toast" id="toast"></div>
+    // ── Petals ────────────────────────────────────────
+    const petalWrap = document.getElementById('petals');
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    for (let i = 0; i < (isMobile ? 10 : 18); i++) {
+      const p = document.createElement('div');
+      p.className = 'petal-p';
+      p.style.cssText = `left:${Math.random() * 100}%;animation-duration:${7 + Math.random() * 9}s;animation-delay:${Math.random() * 9}s;opacity:${0.1 + Math.random() * 0.22};width:${4 + Math.random() * 4}px;height:${6 + Math.random() * 6}px;`;
+      petalWrap.appendChild(p);
+    }
 
-<script>
-// ══════════════════════════════════════════════════
-//  EPISODES
-// ══════════════════════════════════════════════════
-const episodes = [
-  { title: "ep 01", url: "https://drive.google.com/file/d/1rt25mRYteDqXeVAIp4bT6DZMI2vESLSa/view?usp=sharing" },
-  { title: "ep 02", url: "https://drive.google.com/file/d/1EKalGYeexGxu0iX2WlWhpga5CaMf6vH0/view?usp=drive_link" },
-  { title: "ep 03", url: "https://drive.google.com/file/d/1JMIFJQNU-eYSCrQnmv1GkOMCSTnmBH8f/view?usp=drive_link" },
-  { title: "ep 04", url: "https://drive.google.com/file/d/1eTZykgnu-f0M7-4QEpW0eNMeyOmFruVb/view?usp=sharing" },
-  { title: "ep 05", url: "https://drive.google.com/file/d/1vaWSvnRp1g8nGh6_0itgfOQf0kA01Wds/view?usp=sharing" },
-  { title: "ep 06", url: "https://drive.google.com/file/d/1Fb8BRajDYfQPZ3VDPIKu5fGw1PWqEg5g/view?usp=sharing" },
-  { title: "ep 07", url: "https://drive.google.com/file/d/1S3kqPRmKBqx9w_y58qOwrTtFNz2EYyxm/view?usp=sharing" },
-  { title: "ep 08", url: "https://drive.google.com/file/d/1dlD41VbhlKk4uwpxyPtrm3FQagBKGX7q/view?usp=sharing" },
-];
+    // ── Screen helpers ────────────────────────────────
+    function showScreen(id) {
+      ['introScreen', 'folderScreen', 'playerScreen'].forEach(s =>
+        document.getElementById(s).classList.toggle('hidden', s !== id));
+      if (id !== 'playerScreen') {
+        const el = document.getElementById(id);
+        if (el) el.scrollTop = 0;
+      }
+    }
+    function goToIntro() { showScreen('introScreen'); }
+    function goToFolder() { buildFolder(); showScreen('folderScreen'); }
+    function goToPlayer(idx) { showScreen('playerScreen'); if (idx !== currentEp) changeEpisode(idx); }
 
-// ── Petals ────────────────────────────────────────
-const petalWrap = document.getElementById('petals');
-const isMobile  = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-for (let i = 0; i < (isMobile ? 10 : 18); i++) {
-  const p = document.createElement('div');
-  p.className = 'petal-p';
-  p.style.cssText = `left:${Math.random()*100}%;animation-duration:${7+Math.random()*9}s;animation-delay:${Math.random()*9}s;opacity:${0.1+Math.random()*0.22};width:${4+Math.random()*4}px;height:${6+Math.random()*6}px;`;
-  petalWrap.appendChild(p);
-}
-
-// ── Screen helpers ────────────────────────────────
-function showScreen(id) {
-  ['introScreen','folderScreen','playerScreen'].forEach(s =>
-    document.getElementById(s).classList.toggle('hidden', s !== id));
-  if (id !== 'playerScreen') {
-    const el = document.getElementById(id);
-    if (el) el.scrollTop = 0;
-  }
-}
-function goToIntro()      { showScreen('introScreen'); }
-function goToFolder()     { buildFolder(); showScreen('folderScreen'); }
-function goToPlayer(idx)  { showScreen('playerScreen'); if (idx !== currentEp) changeEpisode(idx); }
-
-// ── Build folder list ─────────────────────────────
-function buildFolder() {
-  const list = document.getElementById('epList');
-  list.innerHTML = '';
-  document.getElementById('folderCount').textContent = `${episodes.length} episodes · just for you`;
-  episodes.forEach((ep, i) => {
-    const row = document.createElement('button');
-    row.className = 'ep-row';
-    row.style.animationDelay = (0.05*i + 0.1) + 's';
-    row.innerHTML = `
-      <span class="ep-num">${String(i+1).padStart(2,'0')}</span>
+    // ── Build folder list ─────────────────────────────
+    function buildFolder() {
+      const list = document.getElementById('epList');
+      list.innerHTML = '';
+      document.getElementById('folderCount').textContent = `${episodes.length} episodes · just for you`;
+      episodes.forEach((ep, i) => {
+        const row = document.createElement('button');
+        row.className = 'ep-row';
+        row.style.animationDelay = (0.05 * i + 0.1) + 's';
+        row.innerHTML = `
+      <span class="ep-num">${String(i + 1).padStart(2, '0')}</span>
       <div class="ep-info">
         <div class="ep-title-text">${ep.title}</div>
-        <div class="ep-meta">offcampus · episode ${i+1} of ${episodes.length}</div>
+        <div class="ep-meta">offcampus · episode ${i + 1} of ${episodes.length}</div>
       </div>
       <span class="ep-play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>`;
-    row.addEventListener('click', () => goToPlayer(i));
-    list.appendChild(row);
-  });
-}
-
-// ── Build pill strip ──────────────────────────────
-function buildStrip() {
-  const strip = document.getElementById('epStrip');
-  strip.innerHTML = '';
-  episodes.forEach((ep, i) => {
-    const pill = document.createElement('button');
-    pill.className = 'ep-pill' + (i === 0 ? ' active' : '');
-    pill.textContent = ep.title;
-    pill.addEventListener('click', () => changeEpisode(i));
-    strip.appendChild(pill);
-  });
-}
-buildStrip();
-
-// ── Drive URL → embed ─────────────────────────────
-function toEmbed(raw) {
-  const m = raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  return m ? `https://drive.google.com/file/d/${m[1]}/preview` : raw;
-}
-
-// ── Player refs ───────────────────────────────────
-const frame    = document.getElementById('driveFrame');
-const loader   = document.getElementById('vidLoader');
-const fade     = document.getElementById('vidFade');
-const badge    = document.getElementById('epBadge');
-const toast    = document.getElementById('toast');
-const prevBtn  = document.getElementById('prevBtn');
-const nextBtn  = document.getElementById('nextBtn');
-const navLabel = document.getElementById('navEpLabel');
-const epChip   = document.getElementById('nowEpChip');
-const driveHint = null; // removed from DOM
-
-let currentEp = -1, toastTimer, badgeTimer, hintTimer;
-
-// ── Prevent panel buttons from stealing focus from the iframe ──────────────
-// Desktop (mouse): preventDefault on mousedown stops focus shift entirely.
-// Mobile (touch): we can't preventDefault on touchstart (cancels click),
-// so instead we re-focus the iframe immediately after any button tap.
-// This gives Drive back focus so it doesn't interpret the blur as a pause trigger.
-
-function refocusIframe() {
-  // Small delay so the button click fires first, then we restore iframe focus
-  setTimeout(() => {
-    const f = document.getElementById('driveFrame');
-    if (f) {
-      // Blur any focused element (our button), then "click" into the iframe
-      // by briefly removing and re-adding pointer-events so Drive sees re-entry
-      f.style.pointerEvents = 'none';
-      requestAnimationFrame(() => { f.style.pointerEvents = ''; });
+        row.addEventListener('click', () => goToPlayer(i));
+        list.appendChild(row);
+      });
     }
-  }, 80);
-}
 
-function blockFocusOnMouseOnly(el) {
-  // Desktop: block focus shift on mousedown
-  el.addEventListener('pointerdown', e => {
-    if (e.pointerType === 'mouse' && e.target.closest('button')) {
-      e.preventDefault();
+
+    // ── Drive URL → embed ─────────────────────────────
+    function toEmbed(raw) {
+      const m = raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      return m ? `https://drive.google.com/file/d/${m[1]}/preview` : raw;
     }
-  }, { passive: false });
 
-  // Mobile: re-focus iframe after any button tap
-  el.addEventListener('touchend', e => {
-    if (e.target.closest('button')) {
-      refocusIframe();
+    // ── Player refs ───────────────────────────────────
+    const frame = document.getElementById('driveFrame');
+    const loader = document.getElementById('vidLoader');
+    const fade = document.getElementById('vidFade');
+    const badge = document.getElementById('epBadge');
+    const toast = document.getElementById('toast');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const navLabel = document.getElementById('navEpLabel');
+    const driveHint = null; // removed from DOM
+
+    let currentEp = -1, toastTimer, badgeTimer, hintTimer;
+
+    // ── Prevent panel buttons from stealing focus from the iframe ──────────────
+    // Desktop (mouse): preventDefault on mousedown stops focus shift entirely.
+    // Mobile (touch): we can't preventDefault on touchstart (cancels click),
+    // so instead we re-focus the iframe immediately after any button tap.
+    // This gives Drive back focus so it doesn't interpret the blur as a pause trigger.
+
+    function refocusIframe() {
+      // Small delay so the button click fires first, then we restore iframe focus
+      setTimeout(() => {
+        const f = document.getElementById('driveFrame');
+        if (f) {
+          // Blur any focused element (our button), then "click" into the iframe
+          // by briefly removing and re-adding pointer-events so Drive sees re-entry
+          f.style.pointerEvents = 'none';
+          requestAnimationFrame(() => { f.style.pointerEvents = ''; });
+        }
+      }, 80);
     }
-  }, { passive: true });
-}
-blockFocusOnMouseOnly(document.querySelector('.netflix-panel'));
-blockFocusOnMouseOnly(document.querySelector('.nfx-topbar'));
 
-// ── Change episode ────────────────────────────────
-function changeEpisode(idx) {
-  if (idx < 0 || idx >= episodes.length) return;
-  // Don't reload iframe if already on this episode (avoids unnecessary pause)
-  if (idx === currentEp) return;
+    function blockFocusOnMouseOnly(el) {
+      // Desktop: block focus shift on mousedown
+      el.addEventListener('pointerdown', e => {
+        if (e.pointerType === 'mouse' && e.target.closest('button')) {
+          e.preventDefault();
+        }
+      }, { passive: false });
 
-  loader.classList.add('show');
-  fade.classList.add('active');
+      // Mobile: re-focus iframe after any button tap
+      el.addEventListener('touchend', e => {
+        if (e.target.closest('button')) {
+          refocusIframe();
+        }
+      }, { passive: true });
+    }
+    blockFocusOnMouseOnly(document.querySelector('.float-nav-prev'));
+    blockFocusOnMouseOnly(document.querySelector('.float-nav-next'));
+    blockFocusOnMouseOnly(document.querySelector('.nfx-topbar'));
 
-  setTimeout(() => {
-    currentEp = idx;
-    frame.src = toEmbed(episodes[idx].url);
+    // ── Change episode ────────────────────────────────
+    function changeEpisode(idx) {
+      if (idx < 0 || idx >= episodes.length) return;
+      // Don't reload iframe if already on this episode (avoids unnecessary pause)
+      if (idx === currentEp) return;
 
-    const title = episodes[idx].title;
-    navLabel.textContent = 'offcampus · ' + title;
-    epChip.textContent   = title;
+      loader.classList.add('show');
+      fade.classList.add('active');
 
-    prevBtn.disabled = idx === 0;
-    nextBtn.disabled = idx === episodes.length - 1;
+      setTimeout(() => {
+        currentEp = idx;
+        frame.src = toEmbed(episodes[idx].url);
 
-    document.querySelectorAll('.ep-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-    const pill = document.getElementById('epStrip').children[idx];
-    if (pill) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        const title = episodes[idx].title;
+        navLabel.textContent = 'offcampus · ' + title;
+        prevBtn.disabled = idx === 0;
+        nextBtn.disabled = idx === episodes.length - 1;
 
-    showBadge(title);
-    showToast('▶ ' + title);
-    showDriveHint();
+        showBadge(title);
+        showToast('▶ ' + title);
+        showDriveHint();
 
-    setTimeout(() => fade.classList.remove('active'), 80);
-  }, 280);
-}
+        setTimeout(() => fade.classList.remove('active'), 80);
+      }, 280);
+    }
 
-frame.addEventListener('load', () => loader.classList.remove('show'));
+    frame.addEventListener('load', () => loader.classList.remove('show'));
 
-function showBadge(text) {
-  badge.textContent = text; badge.classList.add('show');
-  clearTimeout(badgeTimer);
-  badgeTimer = setTimeout(() => badge.classList.remove('show'), 2200);
-}
-function showToast(msg) {
-  toast.textContent = msg; toast.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
-}
+    function showBadge(text) {
+      badge.textContent = text; badge.classList.add('show');
+      clearTimeout(badgeTimer);
+      badgeTimer = setTimeout(() => badge.classList.remove('show'), 2200);
+    }
+    function showToast(msg) {
+      toast.textContent = msg; toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+    }
 
-function showDriveHint() {
-  if (!driveHint) return;
-  driveHint.classList.add('show');
-  clearTimeout(hintTimer);
-  hintTimer = setTimeout(() => driveHint.classList.remove('show'), 3000);
-}
+    function showDriveHint() {
+      if (!driveHint) return;
+      driveHint.classList.add('show');
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(() => driveHint.classList.remove('show'), 3000);
+    }
 
-// ── Open in Drive ─────────────────────────────────
-function openInDrive() {
-  if (currentEp < 0) return;
-  window.open(episodes[currentEp].url, '_blank');
-}
+    // ── Open in Drive ─────────────────────────────────
+    function openInDrive() {
+      if (currentEp < 0) return;
+      window.open(episodes[currentEp].url, '_blank');
+    }
 
-// ── Fullscreen + Rotation ─────────────────────────
-// Cross-origin iframes cannot be fullscreened on most mobile browsers.
-// Strategy:
-//   1. Try native fullscreen on the playerStage div (works on Android Chrome).
-//   2. If that fails / on iOS: use CSS to make playerScreen cover everything,
-//      then use Screen Orientation API to lock landscape.
-// A dedicated "fake fullscreen" state is used as universal fallback.
+    // ── Fullscreen + Rotation ─────────────────────────
+    // Cross-origin iframes cannot be fullscreened on most mobile browsers.
+    // Strategy:
+    //   1. Try native fullscreen on the playerStage div (works on Android Chrome).
+    //   2. If that fails / on iOS: use CSS to make playerScreen cover everything,
+    //      then use Screen Orientation API to lock landscape.
+    // A dedicated "fake fullscreen" state is used as universal fallback.
 
-let isFakeFs = false;
+    let isFakeFs = false;
 
-function toggleFullscreen() {
-  // Already in native fullscreen → exit
-  if (document.fullscreenElement || document.webkitFullscreenElement) {
-    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-    return;
-  }
-  // Already in fake fullscreen → exit
-  if (isFakeFs) { exitFakeFs(); return; }
+    function toggleFullscreen() {
+      // Already in native fullscreen → exit
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        return;
+      }
+      // Already in fake fullscreen → exit
+      if (isFakeFs) { exitFakeFs(); return; }
 
-  // Try native fullscreen on stage (Android Chrome works)
-  const stage = document.getElementById('playerStage');
-  const fn = stage.requestFullscreen || stage.webkitRequestFullscreen;
-  if (fn) {
-    fn.call(stage).then(() => {
-      // Also try to lock landscape
+      // Try native fullscreen on stage (Android Chrome works)
+      const stage = document.getElementById('playerStage');
+      const fn = stage.requestFullscreen || stage.webkitRequestFullscreen;
+      if (fn) {
+        fn.call(stage).then(() => {
+          // Also try to lock landscape
+          tryLockLandscape();
+        }).catch(() => {
+          // Native blocked (iOS) → fake fullscreen
+          enterFakeFs();
+        });
+      } else {
+        enterFakeFs();
+      }
+    }
+
+    function tryLockLandscape() {
+      try {
+        const so = screen.orientation || screen.mozOrientation;
+        if (so && so.lock) so.lock('landscape').catch(() => { });
+      } catch (e) { }
+    }
+    function tryUnlockOrientation() {
+      try {
+        const so = screen.orientation || screen.mozOrientation;
+        if (so && so.unlock) so.unlock();
+      } catch (e) { }
+    }
+
+    function enterFakeFs() {
+      isFakeFs = true;
+      const ps = document.getElementById('playerScreen');
+      ps.classList.add('fake-fs');
+      updateFsIcon(true);
       tryLockLandscape();
-    }).catch(() => {
-      // Native blocked (iOS) → fake fullscreen
-      enterFakeFs();
+    }
+    function exitFakeFs() {
+      isFakeFs = false;
+      const ps = document.getElementById('playerScreen');
+      ps.classList.remove('fake-fs');
+      updateFsIcon(false);
+      tryUnlockOrientation();
+    }
+
+    function updateFsIcon(isFs) {
+      if (isFs === undefined) isFs = !!(document.fullscreenElement || document.webkitFullscreenElement) || isFakeFs;
+      const svg = isFs
+        ? '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>'
+        : '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>';
+      const el = document.getElementById('fsIcon');
+      if (el) el.innerHTML = svg;
+    }
+    document.addEventListener('fullscreenchange', () => {
+      updateFsIcon();
+      if (!document.fullscreenElement) tryUnlockOrientation();
     });
-  } else {
-    enterFakeFs();
-  }
-}
+    document.addEventListener('webkitfullscreenchange', () => {
+      updateFsIcon();
+      if (!document.webkitFullscreenElement) tryUnlockOrientation();
+    });
 
-function tryLockLandscape() {
-  try {
-    const so = screen.orientation || screen.mozOrientation;
-    if (so && so.lock) so.lock('landscape').catch(() => {});
-  } catch(e) {}
-}
-function tryUnlockOrientation() {
-  try {
-    const so = screen.orientation || screen.mozOrientation;
-    if (so && so.unlock) so.unlock();
-  } catch(e) {}
-}
+    // Handle device rotation: when user physically rotates to landscape
+    // while on player screen, auto-enter fake fullscreen
+    window.addEventListener('orientationchange', () => {
+      const angle = screen.orientation ? screen.orientation.angle : window.orientation;
+      const isLandscape = Math.abs(angle) === 90;
+      const onPlayer = !document.getElementById('playerScreen').classList.contains('hidden');
+      if (onPlayer && isLandscape && !isFakeFs && !document.fullscreenElement) {
+        enterFakeFs();
+      } else if (!isLandscape && isFakeFs) {
+        exitFakeFs();
+      }
+    });
 
-function enterFakeFs() {
-  isFakeFs = true;
-  const ps = document.getElementById('playerScreen');
-  ps.classList.add('fake-fs');
-  updateFsIcon(true);
-  tryLockLandscape();
-}
-function exitFakeFs() {
-  isFakeFs = false;
-  const ps = document.getElementById('playerScreen');
-  ps.classList.remove('fake-fs');
-  updateFsIcon(false);
-  tryUnlockOrientation();
-}
+    // ── Keyboard shortcuts ────────────────────────────
+    document.addEventListener('keydown', e => {
+      if (document.getElementById('playerScreen').classList.contains('hidden')) return;
+      if (e.code === 'ArrowRight' && e.shiftKey) { e.preventDefault(); changeEpisode(currentEp + 1); }
+      if (e.code === 'ArrowLeft' && e.shiftKey) { e.preventDefault(); changeEpisode(currentEp - 1); }
+    });
 
-function updateFsIcon(isFs) {
-  if (isFs === undefined) isFs = !!(document.fullscreenElement || document.webkitFullscreenElement) || isFakeFs;
-  const svg = isFs
-    ? '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>'
-    : '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>';
-  const el = document.getElementById('fsIcon');
-  if (el) el.innerHTML = svg;
-}
-document.addEventListener('fullscreenchange', () => {
-  updateFsIcon();
-  if (!document.fullscreenElement) tryUnlockOrientation();
-});
-document.addEventListener('webkitfullscreenchange', () => {
-  updateFsIcon();
-  if (!document.webkitFullscreenElement) tryUnlockOrientation();
-});
+    // Prevent strip scroll from bubbling
+    document.getElementById('epStrip').addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
+    document.getElementById('epList').addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
 
-// Handle device rotation: when user physically rotates to landscape
-// while on player screen, auto-enter fake fullscreen
-window.addEventListener('orientationchange', () => {
-  const angle = screen.orientation ? screen.orientation.angle : window.orientation;
-  const isLandscape = Math.abs(angle) === 90;
-  const onPlayer = !document.getElementById('playerScreen').classList.contains('hidden');
-  if (onPlayer && isLandscape && !isFakeFs && !document.fullscreenElement) {
-    enterFakeFs();
-  } else if (!isLandscape && isFakeFs) {
-    exitFakeFs();
-  }
-});
-
-// ── Keyboard shortcuts ────────────────────────────
-document.addEventListener('keydown', e => {
-  if (document.getElementById('playerScreen').classList.contains('hidden')) return;
-  if (e.code === 'ArrowRight' && e.shiftKey) { e.preventDefault(); changeEpisode(currentEp + 1); }
-  if (e.code === 'ArrowLeft'  && e.shiftKey) { e.preventDefault(); changeEpisode(currentEp - 1); }
-});
-
-// Prevent strip scroll from bubbling
-document.getElementById('epStrip').addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
-document.getElementById('epList') .addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
-
-// ── Keep iframe focused for mobile timeline scrubbing ─────────────────────
-// On mobile, any touch landing on the page (even passing into the iframe)
-// can blur the iframe — Drive treats this as focus-lost → pause.
-// We intercept touchstart on the video-shell and reset pointer-events on the
-// iframe so the browser re-routes the touch into it rather than the page.
-// passive:true keeps scroll/swipe performance intact.
-document.getElementById('videoShell').addEventListener('touchstart', () => {
-  const f = document.getElementById('driveFrame');
-  if (f) {
-    f.style.pointerEvents = 'none';
-    requestAnimationFrame(() => { f.style.pointerEvents = ''; });
-  }
-}, { passive: true });
-</script>
+    // ── Keep iframe focused for mobile timeline scrubbing ─────────────────────
+    // On mobile, any touch landing on the page (even passing into the iframe)
+    // can blur the iframe — Drive treats this as focus-lost → pause.
+    // We intercept touchstart on the video-shell and reset pointer-events on the
+    // iframe so the browser re-routes the touch into it rather than the page.
+    // passive:true keeps scroll/swipe performance intact.
+    document.getElementById('videoShell').addEventListener('touchstart', () => {
+      const f = document.getElementById('driveFrame');
+      if (f) {
+        f.style.pointerEvents = 'none';
+        requestAnimationFrame(() => { f.style.pointerEvents = ''; });
+      }
+    }, { passive: true });
+  </script>
 </body>
+
 </html>
