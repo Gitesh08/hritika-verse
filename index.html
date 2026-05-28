@@ -524,34 +524,86 @@
       color: rgba(201, 121, 122, 0.48);
     }
 
-    /* ════════════════════════════════════════
-   SCREEN 3 — PLAYER  (Drive-native style)
-════════════════════════════════════════ */
+    /* ── Player Stage ── */
     #playerScreen {
-      justify-content: flex-start;
+      display: flex;
+      flex-direction: column;
+      background: #000;
       padding: 0;
-      overflow: hidden;
-      background: #000;
     }
 
-    /* ── Player stage: fills screen completely ── */
-    .player-stage {
-      position: relative;
+    .player-app-bar {
       width: 100%;
-      height: 100%;
-      background: #000;
-      overflow: hidden;
+      height: calc(56px + var(--safe-top));
+      padding-top: var(--safe-top);
+      display: flex;
+      align-items: center;
+      background: #111;
+      color: #fff;
+      padding-left: 8px;
+      padding-right: 8px;
+      z-index: 50;
+      flex-shrink: 0;
+      box-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
     }
 
-    /* ── VIDEO SHELL: absolute, fills entire stage ── */
+    .app-bar-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+    }
+
+    .app-bar-btn:active {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .app-bar-btn:disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .app-bar-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .app-bar-title {
+      flex: 1;
+      text-align: center;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 8px;
+    }
+
+    .app-bar-nav {
+      display: flex;
+      gap: 4px;
+    }
+
     .video-shell {
-      position: absolute;
-      inset: 0;
+      flex: 1;
+      width: 100%;
+      position: relative;
       background: #000;
-      overflow: hidden;
     }
 
-    /* iframe fills shell perfectly — never cropped */
     .drive-frame {
       position: absolute;
       top: 0;
@@ -562,294 +614,6 @@
       background: #000;
     }
 
-    /* ── TOP BAR: overlays video with Drive-style gradient ── */
-    .nfx-topbar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      align-items: center;
-      height: calc(52px + var(--safe-top));
-      padding-top: var(--safe-top);
-      padding-left: calc(4px + var(--safe-left));
-      padding-right: calc(8px + var(--safe-right));
-      gap: 2px;
-      /* Deep black fade — perfectly masks Drive's own top bar */
-      background: linear-gradient(to bottom,
-        rgba(0,0,0,0.92) 0%,
-        rgba(0,0,0,0.72) 55%,
-        rgba(0,0,0,0.0) 100%);
-      z-index: 30;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.22s ease;
-    }
-    .ls-visible .nfx-topbar { opacity: 1; }
-
-    .nfx-topbar > * {
-      pointer-events: auto;
-    }
-
-    /* Back & fullscreen buttons — Drive-style: clean circles */
-    .nfx-back-btn,
-    .nfx-fs-btn {
-      background: none;
-      border: none;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      cursor: pointer;
-      -webkit-appearance: none;
-      touch-action: manipulation;
-      transition: background 0.15s;
-      flex-shrink: 0;
-    }
-
-    .nfx-back-btn:active,
-    .nfx-fs-btn:active {
-      background: rgba(255,255,255,0.15);
-    }
-
-    .nfx-back-btn svg,
-    .nfx-fs-btn svg {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
-      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));
-    }
-
-    /* Title label in the top bar */
-    .nfx-ep-label {
-      flex: 1;
-      text-align: center;
-      font-size: 11px;
-      letter-spacing: 0.13em;
-      color: rgba(255,255,255,0.82);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      padding: 0 4px;
-      font-family: 'Jost', sans-serif;
-      font-weight: 300;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
-    }
-
-    /* ════════════════════════════════════════
-     CUSTOM OVERLAY — Drive-style controls
-    ════════════════════════════════════════ */
-
-    /* Root: covers iframe, pointer-events none by default so taps reach Drive if needed */
-    .ls-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 28;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.22s ease;
-    }
-    .ls-overlay.ls-visible { opacity: 1; }
-
-    /* ── Center cluster: [replay10] [►/⏸] [fwd10] ── */
-    .ls-center-cluster {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      align-items: center;
-      gap: 26px;
-      pointer-events: auto;
-    }
-
-    /* Skip buttons (10s back / forward) */
-    .ls-skip-btn {
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      background: rgba(28,28,28,0.78);
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 2px 14px rgba(0,0,0,0.55);
-      transition: background 0.15s, transform 0.12s;
-      touch-action: manipulation;
-      -webkit-appearance: none;
-    }
-    .ls-skip-btn:active {
-      background: rgba(65,65,65,0.92);
-      transform: scale(0.86);
-    }
-    .ls-skip-btn svg {
-      width: 30px;
-      height: 30px;
-      display: block;
-      fill: currentColor;
-    }
-
-    /* Centre play/pause button */
-    .ls-play-btn {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: rgba(28,28,28,0.88);
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 2px 24px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.09);
-      transition: background 0.15s, transform 0.12s;
-      touch-action: manipulation;
-      -webkit-appearance: none;
-    }
-    .ls-play-btn:active {
-      background: rgba(70,70,70,0.96);
-      transform: scale(0.87);
-    }
-    .ls-play-btn svg {
-      width: 36px;
-      height: 36px;
-      display: block;
-      fill: currentColor;
-    }
-
-    /* ── Bottom control bar ── */
-    .ls-bottom-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(to top,
-        rgba(0,0,0,0.92) 0%,
-        rgba(0,0,0,0.65) 52%,
-        transparent 100%);
-      padding-bottom: env(safe-area-inset-bottom, 4px);
-      pointer-events: auto;
-    }
-
-    /* Thin decorative progress rail (visual only — Drive controls actual seek) */
-    .ls-progress-rail {
-      height: 3px;
-      background: rgba(255,255,255,0.20);
-      margin: 0 14px 10px;
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .ls-progress-fill {
-      height: 100%;
-      width: 0%;
-      background: #fff;
-      border-radius: 2px;
-    }
-
-    /* Controls row inside bottom bar */
-    .ls-bar-row {
-      display: flex;
-      align-items: center;
-      padding: 0 4px 10px;
-      gap: 2px;
-    }
-
-    /* Icon buttons in bottom bar */
-    .ls-ctrl-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: none;
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s;
-      touch-action: manipulation;
-      -webkit-appearance: none;
-      flex-shrink: 0;
-    }
-    .ls-ctrl-btn:active  { background: rgba(255,255,255,0.14); }
-    .ls-ctrl-btn:disabled { opacity: 0.28; pointer-events: none; }
-    .ls-ctrl-btn svg {
-      width: 22px;
-      height: 22px;
-      fill: currentColor;
-      display: block;
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.7));
-    }
-
-    /* Episode label in bar */
-    .ls-ep-label {
-      flex: 1;
-      font-family: 'Jost', sans-serif;
-      font-weight: 300;
-      font-size: 11px;
-      letter-spacing: 0.10em;
-      color: rgba(255,255,255,0.85);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding: 0 10px;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-    }
-
-    /* Right button cluster in bottom bar */
-    .ls-bar-right {
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-    }
-
-    /* ── Fake fullscreen (iOS fallback) ── */
-    #playerScreen.fake-fs {
-      z-index: 9999;
-      background: #000;
-    }
-
-    #playerScreen.fake-fs .nfx-topbar {
-      background: linear-gradient(to bottom,
-        rgba(0,0,0,0.85) 0%,
-        rgba(0,0,0,0.55) 60%,
-        transparent 100%);
-    }
-
-    /* ── Max-width cap on wider phones (portrait) ── */
-    @media (min-width: 600px) {
-      .player-stage {
-        max-width: 600px;
-        margin: 0 auto;
-      }
-      #playerScreen {
-        align-items: center;
-      }
-    }
-
-    /* Always full-width in landscape / fullscreen */
-    @media (orientation: landscape) {
-      .player-stage {
-        max-width: 100% !important;
-        width: 100%;
-      }
-    }
-    #playerScreen.fake-fs .player-stage {
-      max-width: 100% !important;
-      width: 100%;
-    }
-
-
-
     /* ── Loading overlay ── */
     .vid-loader {
       position: absolute;
@@ -857,7 +621,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.72);
+      background: rgba(0, 0, 0, 0.72);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s;
@@ -873,13 +637,15 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      border: 2.5px solid rgba(255,255,255,0.12);
+      border: 2.5px solid rgba(255, 255, 255, 0.12);
       border-top-color: #fff;
       animation: spin 0.72s linear infinite;
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     /* ── Fade transition between episodes ── */
@@ -897,44 +663,18 @@
       opacity: 1;
     }
 
-    /* ── Episode badge (brief overlay after switching) ── */
-    .ep-badge {
-      position: absolute;
-      top: calc(56px + var(--safe-top));
-      left: calc(12px + var(--safe-left));
-      z-index: 29;
-      background: rgba(28,28,28,0.85);
-      border-radius: 20px;
-      padding: 5px 14px;
-      font-size: 10px;
-      letter-spacing: 0.14em;
-      color: rgba(255,255,255,0.88);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.35s;
-      font-family: 'Jost', sans-serif;
-      font-weight: 300;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-    }
-
-    .ep-badge.show {
-      opacity: 1;
-    }
-
     /* ── Toast ── */
     .toast {
       position: fixed;
       bottom: 80px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(28,28,28,0.92);
+      background: rgba(28, 28, 28, 0.92);
       border-radius: 20px;
       padding: 8px 20px;
       font-size: 11px;
       letter-spacing: 0.08em;
-      color: rgba(255,255,255,0.9);
+      color: rgba(255, 255, 255, 0.9);
       pointer-events: none;
       opacity: 0;
       z-index: 400;
@@ -942,7 +682,7 @@
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       white-space: nowrap;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
       font-family: 'Jost', sans-serif;
       font-weight: 300;
     }
@@ -953,19 +693,16 @@
 
     /* ── Animations ── */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-
-    /* ── Native fullscreen ── */
-    .player-stage:fullscreen,
-    .player-stage:-webkit-full-screen {
-      background: #000;
-      max-width: 100% !important;
-      width: 100%;
-    }
-
-
   </style>
 </head>
 
@@ -1036,76 +773,39 @@
 ══════════════════════════════════════ -->
   <div class="screen hidden" id="playerScreen">
 
-    <div class="player-stage" id="playerStage">
+    <!-- App Bar (Top Navigation) -->
+    <div class="player-app-bar">
+      <button class="app-bar-btn" onclick="goToFolder()" aria-label="back">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg>
+      </button>
+      <span class="app-bar-title" id="navEpLabel">offcampus</span>
+      <div class="app-bar-nav">
+        <button class="app-bar-btn" id="prevBtn" onclick="changeEpisode(currentEp-1)" disabled aria-label="previous">
+          <svg viewBox="0 0 24 24">
+            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" />
+          </svg>
+        </button>
+        <button class="app-bar-btn" id="nextBtn" onclick="changeEpisode(currentEp+1)" aria-label="next">
+          <svg viewBox="0 0 24 24">
+            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+          </svg>
+        </button>
+      </div>
+    </div>
 
-      <!-- VIDEO AREA — fills entire stage, pure native -->
-      <div class="video-shell" id="videoShell">
-        <iframe id="driveFrame" class="drive-frame" src=""
-          allow="autoplay; fullscreen; picture-in-picture; screen-wake-lock" loading="lazy"></iframe>
-        
-        <div class="vid-loader" id="vidLoader">
-          <div class="spin-ring"></div>
-        </div>
-        <div class="vid-fade" id="vidFade"></div>
-        
-        <!-- CUSTOM OVERLAY — Works in both Portrait and Landscape -->
-        <div class="ls-overlay" id="lsOverlay">
-          
-          <!-- TOP BAR (Back button, Title, Open in Drive) -->
-          <div class="nfx-topbar">
-            <button class="nfx-back-btn" onclick="goToFolder()" aria-label="back">
-              <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-            </button>
-            <span class="nfx-ep-label" id="navEpLabel">offcampus</span>
-            <button class="nfx-fs-btn" onclick="openInDrive()" aria-label="open in drive" style="margin-right: 2px;">
-              <svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
-            </button>
-          </div>
+    <!-- Video Area (Unobstructed for Native Controls) -->
+    <div class="video-shell" id="videoShell">
+      <iframe id="driveFrame" class="drive-frame" src=""
+        allow="autoplay; fullscreen; picture-in-picture; screen-wake-lock" loading="lazy"></iframe>
 
-          <!-- Center cluster: 10s back │ play/pause │ 10s forward -->
-          <div class="ls-center-cluster">
-            <button class="ls-skip-btn" onclick="lsSeek(-10)" aria-label="10 seconds back">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-                <text x="12" y="14.8" text-anchor="middle" font-size="5.2" font-family="Jost,sans-serif" font-weight="600" fill="currentColor">10</text>
-              </svg>
-            </button>
+      <div class="vid-loader" id="vidLoader">
+        <div class="spin-ring"></div>
+      </div>
+      <div class="vid-fade" id="vidFade"></div>
+    </div>
 
-            <button class="ls-play-btn" id="lsPlayBtn" onclick="lsPlayPause()" aria-label="play or pause">
-              <svg id="lsPlayIcon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-              </svg>
-            </button>
-
-            <button class="ls-skip-btn" onclick="lsSeek(10)" aria-label="10 seconds forward">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18 13c0 3.31-2.69 6-6 6s-6-2.69-6-6 2.69-6 6-6v4l5-5-5-5v4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8h-2z"/>
-                <text x="12" y="14.8" text-anchor="middle" font-size="5.2" font-family="Jost,sans-serif" font-weight="600" fill="currentColor">10</text>
-              </svg>
-            </button>
-          </div>
-
-          <!-- Bottom bar: episode title │ prev•next•fullscreen -->
-          <div class="ls-bottom-bar">
-            <div class="ls-progress-rail"><div class="ls-progress-fill" id="lsProgressFill"></div></div>
-            <div class="ls-bar-row">
-              <span class="ls-ep-label" id="lsEpLabel">offcampus</span>
-              <div class="ls-bar-right">
-                <button class="ls-ctrl-btn" id="lsPrevEpBtn" onclick="changeEpisode(currentEp-1)" disabled aria-label="previous episode">
-                  <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
-                </button>
-                <button class="ls-ctrl-btn" id="lsNextEpBtn" onclick="changeEpisode(currentEp+1)" aria-label="next episode">
-                  <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2.5-6 5.5 3.91V8.09L8.5 12zM16 6h2v12h-2z"/></svg>
-                </button>
-                <button class="ls-ctrl-btn" onclick="toggleFullscreen()" aria-label="toggle fullscreen">
-                  <svg id="fsIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div><!-- /ls-overlay -->
-
-    </div><!-- /player-stage -->
   </div>
 
   <div class="toast" id="toast"></div>
@@ -1148,7 +848,6 @@
     function goToFolder() { buildFolder(); showScreen('folderScreen'); }
     function goToPlayer(idx) { showScreen('playerScreen'); if (idx !== currentEp) changeEpisode(idx); }
 
-    // ── Build folder list ─────────────────────────────
     function buildFolder() {
       const list = document.getElementById('epList');
       list.innerHTML = '';
@@ -1169,24 +868,21 @@
       });
     }
 
-
-    // ── Drive URL → embed ─────────────────────────────
     function toEmbed(raw) {
       const m = raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
       return m ? `https://drive.google.com/file/d/${m[1]}/preview` : raw;
     }
 
-    // ── Player refs ───────────────────────────────────
     const frame = document.getElementById('driveFrame');
     const loader = document.getElementById('vidLoader');
     const fade = document.getElementById('vidFade');
+    const toast = document.getElementById('toast');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
     const navLabel = document.getElementById('navEpLabel');
-    const lsEpLabel = document.getElementById('lsEpLabel');
-    const prevBtn = document.getElementById('lsPrevEpBtn');
-    const nextBtn = document.getElementById('lsNextEpBtn');
-    let currentEp = -1;
 
-    // ── Change episode ────────────────────────────────
+    let currentEp = -1, toastTimer;
+
     function changeEpisode(idx) {
       if (idx < 0 || idx >= episodes.length) return;
       if (idx === currentEp) return;
@@ -1199,13 +895,11 @@
         frame.src = toEmbed(episodes[idx].url);
 
         const title = episodes[idx].title;
-        if (navLabel) navLabel.textContent = 'offcampus · ' + title;
-        if (lsEpLabel) lsEpLabel.textContent = 'offcampus · ' + title;
-        if (prevBtn) prevBtn.disabled = idx === 0;
-        if (nextBtn) nextBtn.disabled = idx === episodes.length - 1;
-        
-        lsIsPlaying = true;
-        updateLsPlayIcon();
+        navLabel.textContent = 'offcampus · ' + title;
+        prevBtn.disabled = idx === 0;
+        nextBtn.disabled = idx === episodes.length - 1;
+
+        showToast('▶ ' + title);
 
         setTimeout(() => fade.classList.remove('active'), 80);
       }, 280);
@@ -1213,192 +907,16 @@
 
     frame.addEventListener('load', () => loader.classList.remove('show'));
 
-
-
-    // ── Open in Drive ─────────────────────────────────
-    function openInDrive() {
-      if (currentEp < 0) return;
-      window.open(episodes[currentEp].url, '_blank');
+    function showToast(msg) {
+      toast.textContent = msg; toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // ── Fullscreen + Rotation ─────────────────────────
-    // Cross-origin iframes cannot be fullscreened on most mobile browsers.
-    // Strategy:
-    //   1. Try native fullscreen on the playerStage div (works on Android Chrome).
-    //   2. If that fails / on iOS: use CSS to make playerScreen cover everything,
-    //      then use Screen Orientation API to lock landscape.
-    // A dedicated "fake fullscreen" state is used as universal fallback.
-
-    let isFakeFs = false;
-
-    function toggleFullscreen() {
-      // Already in native fullscreen → exit
-      if (document.fullscreenElement || document.webkitFullscreenElement) {
-        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-        return;
-      }
-      // Already in fake fullscreen → exit
-      if (isFakeFs) { exitFakeFs(); return; }
-
-      // Try native fullscreen on stage (Android Chrome works)
-      const stage = document.getElementById('playerStage');
-      const fn = stage.requestFullscreen || stage.webkitRequestFullscreen;
-      if (fn) {
-        fn.call(stage).then(() => {
-          // Also try to lock landscape
-          tryLockLandscape();
-        }).catch(() => {
-          // Native blocked (iOS) → fake fullscreen
-          enterFakeFs();
-        });
-      } else {
-        enterFakeFs();
-      }
-    }
-
-    function tryLockLandscape() {
-      try {
-        const so = screen.orientation || screen.mozOrientation;
-        if (so && so.lock) so.lock('landscape').catch(() => { });
-      } catch (e) { }
-    }
-    function tryUnlockOrientation() {
-      try {
-        const so = screen.orientation || screen.mozOrientation;
-        if (so && so.unlock) so.unlock();
-      } catch (e) { }
-    }
-
-    function enterFakeFs() {
-      isFakeFs = true;
-      const ps = document.getElementById('playerScreen');
-      ps.classList.add('fake-fs');
-      updateFsIcon(true);
-      tryLockLandscape();
-    }
-    function exitFakeFs() {
-      isFakeFs = false;
-      const ps = document.getElementById('playerScreen');
-      ps.classList.remove('fake-fs');
-      updateFsIcon(false);
-      tryUnlockOrientation();
-    }
-
-    function updateFsIcon(isFs) {
-      if (isFs === undefined) isFs = !!(document.fullscreenElement || document.webkitFullscreenElement) || isFakeFs;
-      const svg = isFs
-        ? '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>'
-        : '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>';
-      const el = document.getElementById('fsIcon');
-      if (el) el.innerHTML = svg;
-    }
-
-    document.addEventListener('fullscreenchange', () => {
-      updateFsIcon();
-      if (!document.fullscreenElement) tryUnlockOrientation();
-    });
-    document.addEventListener('webkitfullscreenchange', () => {
-      updateFsIcon();
-      if (!document.webkitFullscreenElement) tryUnlockOrientation();
-    });
-
-    // Handle device rotation: when user physically rotates to landscape
-    // while on player screen, auto-enter fake fullscreen
-    window.addEventListener('orientationchange', () => {
-      const angle = screen.orientation ? screen.orientation.angle : window.orientation;
-      const isLandscape = Math.abs(angle) === 90;
-      const onPlayer = !document.getElementById('playerScreen').classList.contains('hidden');
-      if (onPlayer && isLandscape && !isFakeFs && !document.fullscreenElement) {
-        enterFakeFs();
-      } else if (!isLandscape && isFakeFs) {
-        exitFakeFs();
-      }
-    });
-
-    // Prevent scroll bubbling from episode list
     document.getElementById('epList').addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
 
-    // ════════════════════════════════════════════════
-    //  CUSTOM OVERLAY CONTROLS
-    // ════════════════════════════════════════════════
 
-    let lsCtlTimer = null;
-    let lsIsPlaying = true; // optimistically assume playing after episode loads
 
-    function isPlayerVisible() {
-      return !document.getElementById('playerScreen').classList.contains('hidden');
-    }
-
-    function showLsCtl() {
-      const ov = document.getElementById('lsOverlay');
-      if (!ov) return;
-      ov.classList.add('ls-visible');
-      clearTimeout(lsCtlTimer);
-      lsCtlTimer = setTimeout(hideLsCtl, 3500);
-    }
-    function hideLsCtl() {
-      const ov = document.getElementById('lsOverlay');
-      if (ov) ov.classList.remove('ls-visible');
-      clearTimeout(lsCtlTimer);
-    }
-
-    function updateLsPlayIcon() {
-      const icon = document.getElementById('lsPlayIcon');
-      if (!icon) return;
-      // pause icon when playing, play icon when paused
-      icon.innerHTML = lsIsPlaying
-        ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
-        : '<path d="M8 5v14l11-7z"/>';
-    }
-
-    // Play/pause — best-effort: focus iframe + dispatch Space key
-    function lsPlayPause() {
-      const f = document.getElementById('driveFrame');
-      if (f) {
-        f.focus();
-        try {
-          f.dispatchEvent(new KeyboardEvent('keydown', {
-            key: ' ', code: 'Space', keyCode: 32, which: 32, bubbles: true
-          }));
-        } catch (e) { }
-      }
-      lsIsPlaying = !lsIsPlaying;
-      updateLsPlayIcon();
-      showLsCtl(); // reset hide timer
-    }
-
-    // Seek — best-effort: focus iframe + ArrowLeft/Right (Drive: ~5s per press)
-    function lsSeek(seconds) {
-      const f = document.getElementById('driveFrame');
-      if (f) {
-        f.focus();
-        const isBack = seconds < 0;
-        const key  = isBack ? 'ArrowLeft'  : 'ArrowRight';
-        const code = isBack ? 'ArrowLeft'  : 'ArrowRight';
-        const kc   = isBack ? 37 : 39;
-        const presses = Math.round(Math.abs(seconds) / 5); // Drive moves ~5s per arrow
-        for (let i = 0; i < presses; i++) {
-          setTimeout(() => {
-            try {
-              f.dispatchEvent(new KeyboardEvent('keydown', {
-                key, code, keyCode: kc, which: kc, bubbles: true
-              }));
-            } catch (e) { }
-          }, i * 120);
-        }
-      }
-      showLsCtl();
-    }
-
-    // Any touch/click anywhere on the player — show controls
-    // Using capture phase so we intercept before the iframe gets the event.
-    document.addEventListener('touchstart', () => {
-      if (isPlayerVisible()) showLsCtl();
-    }, { capture: true, passive: true });
-
-    document.addEventListener('mousedown', () => {
-      if (isPlayerVisible()) showLsCtl();
-    }, { capture: true });
   </script>
 </body>
 
